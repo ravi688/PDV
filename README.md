@@ -20,7 +20,7 @@ Uploading results to Database server…
 Done!
 ```
 ### PDV Runner (pdv_runner.py)
-This script should be installed in all the nodes participating in running the source snippets and should be launched once (be kept running)
+This script should be installed in all the nodes participating in running the source snippets and should be launched once (be kept running).
 It listens for PDV Host for source snippets, and compiles the them, builds executable, runs them and sends the result back to PDV Host.
 It should be run like the following:
 ```
