@@ -1,7 +1,7 @@
 # PDV
 A tool to automate running C++ snippets of algorithms and data structures on different CPUs, collect performance data, and display them on a webpage.
 
-# Overview
+## Overview
 There are three components which together make PDV work
 ### PDV Host (pdv_host.py)
 This is the main script which manages everything and is supposed to be run everytime you want to run tests and upload data to the database.
