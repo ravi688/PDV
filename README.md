@@ -24,7 +24,7 @@ This script should be installed in all the nodes participating in running the so
 It listens for PDV Host for source snippets, and compiles the them, builds executable, runs them and sends the result back to PDV Host.
 It should be run like the following:
 ```
-$ python pdf_runner.py
+$ python pdv_runner.py
 Waiting for source…
 Got source <main.cpp>
 g++ -std=c++20 -lpdv -I$(pkg-config pdv –flags) <main.cpp> -o ./main
