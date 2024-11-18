@@ -7,7 +7,7 @@ There are three components which together make PDV work
 This is the main script which manages everything and is supposed to be run everytime you want to run tests and upload data to the database.
 It should be run like the following:
 ```
-$ python pdv.py <main.cpp> “Linked List v/s Vector Test”
+$ python pdv_host.py <main.cpp> “Linked List v/s Vector Test”
 Searching for PDV runners….
 Found 2 runners
 1. Core i5 12400
