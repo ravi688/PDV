@@ -85,6 +85,9 @@ def main():
 	print('PDV Host version 1.0')
 	parser = argparse.ArgumentParser(description = 'PDV Host version 1.0')
 	parser.add_argument('--port', action = "store", dest = "pdv_port", type=int, required=False)
+	parser.add_argument('--ipa_file', action = "store", dest = "ipa_file", type=str, required=False)
+	parser.add_argument('--file', action = "store", dest = "file", type=str, required=True)
+	parser.add_argument('--message', action = "store", dest = "message", type=str, required=True)
 	given_args = parser.parse_args()
 	if given_args.pdv_port:
 		global PDV_CLIENT_PORT
