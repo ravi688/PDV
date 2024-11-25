@@ -1,6 +1,8 @@
 # PDV
 A tool to automate running C++ snippets of algorithms and data structures on different CPUs, collect performance data, and display them on a webpage.
 
+Why can't we use Github/Gitlab Runners and CI/CD? It's because it is a bit complex to achieve "Process just commited (pushed) file only".
+
 ## Package Requirements
 ```
 sudo pip install icmplib
