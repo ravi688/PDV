@@ -2,6 +2,8 @@ import socket
 import netifaces
 import icmplib
 import argparse
+import json
+import ipaddress
 
 PDV_CLIENT_PORT = 400
 
@@ -81,6 +83,13 @@ def find_hosts():
 				print('\tFinding hosts on the same subnet as in %s' % ip_address)
 				find_hosts_on_subnet(ip_address)
 
+def is_valid_ip_address(ipa):
+	try:
+		ip = ipaddress.ip_address(ipa)
+	except:
+		return False
+	return True
+
 def main():
 	print('PDV Host version 1.0')
 	parser = argparse.ArgumentParser(description = 'PDV Host version 1.0')
@@ -92,7 +101,24 @@ def main():
 	if given_args.pdv_port:
 		global PDV_CLIENT_PORT
 		PDV_CLIENT_PORT = given_args.pdv_port
-	find_hosts()
+	if given_args.ipa_file:
+		file = open(given_args.ipa_file, "r")
+		json_str = file.read()
+		try:
+			json_doc = json.loads(json_str)
+		except:
+			print('Failed to parse json file: %s' % given_args.ipa_file)
+			file.close()
+			return
+		for key,value in json_doc.items():
+			if is_valid_ip_address(value):
+				print('Entry %s' % key)
+				ping(value)
+			else:
+				print('Entry %s doesn\'t have valid ip address' % key)
+		file.close()
+	else:
+		find_hosts()
 	return
 
 main()
