@@ -3,7 +3,7 @@ import netifaces
 import icmplib
 import argparse
 
-PDV_CLIENT_PORT = 234
+PDV_CLIENT_PORT = 400
 
 def try_get_ip_addresses(interface):
 	addrs = []
@@ -16,17 +16,19 @@ def try_get_ip_addresses(interface):
 	return addrs
 
 def check_for_pdv_client(ip_address):
-	print('checking for pdv client at port %d' % PDV_CLIENT_PORT, end = ' ')
+	print(', checking for pdv client at port %d' % PDV_CLIENT_PORT, end = ' ')
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	except:
 		print('- socket error occurred', end = ' ')
 		return
+	s.setblocking(1)
 	s.settimeout(1)
 	try:
 		s.connect((ip_address, PDV_CLIENT_PORT))
-	except:
-		print(' - connection error occurred', end = ' ')
+	except socket.error as e:
+		s.close()
+		print(' - connection error occurred: %s' % e, end = ' ')
 		return
 	challenge = "From PDV Host: Who are you?"
 	try:
@@ -43,9 +45,16 @@ def check_for_pdv_client(ip_address):
 		return
 	response = buf.decode("utf-8")
 	if response == "I'm PDV Client":
+		try:
+			s.sendall("From PDV Host: ACK".encode())
+		except:
+			print(' - ack send error', end = ' ')
+			s.close()
+			return
 		print('- found pdv client')
 	else:
 		print('- response is wrong')
+	s.close()
 
 def ping(ip_address):
 	print('\tPinging %s ..' % ip_address, end = ' ')
@@ -77,7 +86,9 @@ def main():
 	parser = argparse.ArgumentParser(description = 'PDV Host version 1.0')
 	parser.add_argument('--port', action = "store", dest = "pdv_port", type=int, required=False)
 	given_args = parser.parse_args()
-	PDV_CLIENT_PORT = given_args.pdv_port
+	if given_args.pdv_port:
+		global PDV_CLIENT_PORT
+		PDV_CLIENT_PORT = given_args.pdv_port
 	find_hosts()
 	return
 
