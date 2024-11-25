@@ -57,7 +57,7 @@ def check_for_pdv_client(ip_address):
 	s.close()
 
 def ping(ip_address):
-	print('\tPinging %s ..' % ip_address, end = ' ')
+	print('\tPinging %s at port %d ..' % (ip_address, PDV_CLIENT_PORT), end = ' ')
 	result = icmplib.ping(ip_address, count=1, interval=0.1)
 	if result.is_alive:
 		print(' - found alive', end = ' ')
