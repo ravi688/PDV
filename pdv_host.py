@@ -6,6 +6,7 @@ import json
 import ipaddress
 import os
 import time
+import subprocess
 
 PDV_CLIENT_PORT = 400
 # first element is the file name, second element packaged json data to be dispatched to pdv clients
@@ -171,8 +172,29 @@ def main():
 	parser.add_argument('--port', action = "store", dest = "pdv_port", type=int, required=False)
 	parser.add_argument('--ipa_file', action = "store", dest = "ipa_file", type=str, required=False)
 	parser.add_argument('--file', action = "store", dest = "file", type=str, required=True)
-	parser.add_argument('--message', action = "store", dest = "message", type=str, required=True)
+	parser.add_argument('--title', action = "store", dest = "message", type=str, required=True)
+	parser.add_argument('--description', action = "store", dest = "description", type=str, required=False)
 	given_args = parser.parse_args()
+	description = given_args.description
+	if not given_args.description:
+		if not os.path.exists('./pdv_client'):
+			os.mkdir('./pdv_client')
+		try:
+			result = subprocess.call(['nano', '-lm', './pdv_client/description.txt'])
+		except SubprocessError as e:
+			print('Failed to get description %s' % e)
+			return
+		is_description = False
+		try:
+			with open('./pdv_client/description.txt', 'r') as file:
+				description = file.read()
+		except:
+			pass
+		finally:
+			if not description or len(description) == 0:
+				print('Warning: no description is provided')
+				description = 'No description provided'
+	print('Description: %s' % description)
 	if given_args.pdv_port:
 		global PDV_CLIENT_PORT
 		PDV_CLIENT_PORT = given_args.pdv_port
