@@ -43,8 +43,17 @@ namespace pdv
 				std::cerr << "Failed to create result.xml file" << std::endl;
 				return;
 			}
-			const std::string_view content = "Hello World";
-			stream.write(content.data(), content.size());
+			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+			stream << "<metrics title=\"" << m_title << "\">\n";
+			for(Entry& entry : m_entries)
+			{
+				stream << "\t<output desc=\"" << entry.output.first << "\" value=\"" << entry.output.second << "\"/>\n";
+				stream << "\t<inputs>\n";
+				for(auto& pair : entry.inputs)
+					stream << "\t\t<input desc=\"" << pair.first << "\" value=\"" << pair.second << "\"/>\n";
+				stream << "\t</inputs>\n";
+			}
+			stream << "</metrics>\n";
 			stream.close();
 		}
 	};
