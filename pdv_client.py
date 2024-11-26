@@ -1,6 +1,7 @@
 import socket
 import argparse
 import netifaces
+import json
 
 PDV_CLIENT_PORT = 400
 
@@ -29,6 +30,32 @@ def process(connected_socket, id):
 		response = buf.decode("utf-8")
 		if response == "From PDV Host: ACK":
 			print('[%d] Connection verified' % id)
+		try:
+			print('[%d] Sending source package request' % id)
+			s.sendall("From PDV Client: Please send file".encode())
+		except:
+			print('[%d] Failed to send source package request %s' % (id, e))
+			return
+		try:
+			buf = s.recv(4)
+		except:
+			print('[%d] Failed to receive source package length' % id)
+			return
+		package_len = int.from_bytes(buf, byteorder='little')
+		try:
+			buf = s.recv(package_len)
+		except:
+			print('[%d] Failed to receive source package bytes' % id)
+			return
+		try:
+			print('[%d] Sending ACK')
+			s.sendall("From PDV Client: ACK".encode())
+		except:
+			print('Failed to send ACK')
+			return
+		json_str = buf.decode("utf-8")
+		package = json.loads(json_str)
+		print(package)
 	else:
 		print('[%d] Can\'t solve the challenge' % id)
 		return
@@ -60,6 +87,7 @@ def try_get_ip_addresses(interface):
         return addrs
 
 def bind_ip_address(s):
+	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	for interface in netifaces.interfaces():
 		if 'wl' in interface or 'en' in interface:
 			print('Trying to get INET addresses for interface: %s' % interface)

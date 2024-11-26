@@ -4,8 +4,12 @@ import icmplib
 import argparse
 import json
 import ipaddress
+import os
+import time
 
 PDV_CLIENT_PORT = 400
+# first element is the file name, second element packaged json data to be dispatched to pdv clients
+SOURCE_PACKAGE = [str(), bytes()]
 
 def try_get_ip_addresses(interface):
 	addrs = []
@@ -54,6 +58,39 @@ def check_for_pdv_client(ip_address):
 			s.close()
 			return
 		print('- found pdv client')
+		while True:
+			try:
+				print('Listening for file request')
+				buf = s.recv(1024)
+			except:
+				print('receive error')
+				s.close();
+				return
+			if not buf.decode("utf-8") == "From PDV Client: Please send file":
+				print('Invalid request received')
+				time.sleep(1.0)
+				continue
+			print('Sending file %s' % SOURCE_PACKAGE[0])
+			try:
+				s.sendall(len(SOURCE_PACKAGE[1]).to_bytes(4, byteorder='little'))
+				s.sendall(SOURCE_PACKAGE[1])
+			except:
+				print('send error')
+				s.close()
+				return
+			try:
+				print('Waiting for PDV client ack')
+				buf = s.recv(1024)
+			except:
+				print('failed to receive ack')
+				s.close()
+				return
+			if buf.decode("utf-8") == "From PDV Client: ACK":
+				print('PDV client has received file')
+			else:
+				print('Invalid response received')
+			break
+		# Instantiate a thread here for status listening for this pdv client
 	else:
 		print('- response is wrong')
 	s.close()
@@ -101,6 +138,15 @@ def main():
 	if given_args.pdv_port:
 		global PDV_CLIENT_PORT
 		PDV_CLIENT_PORT = given_args.pdv_port
+	with open(given_args.file, "r") as file:
+		global SOURCE_PACKAGE
+		SOURCE_PACKAGE[0] = given_args.file
+		filename = os.path.basename(given_args.file)
+		content = file.read()
+		package = ({ "filename" : filename }, { "content" : content })
+		json_str = json.dumps(package)
+		json_bytes = json_str.encode()
+		SOURCE_PACKAGE[1] = json_bytes
 	if given_args.ipa_file:
 		file = open(given_args.ipa_file, "r")
 		json_str = file.read()
@@ -119,6 +165,7 @@ def main():
 		file.close()
 	else:
 		find_hosts()
+	# wait upon all the instantiated status listening threads here
 	return
 
 main()
