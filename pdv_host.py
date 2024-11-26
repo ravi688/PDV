@@ -143,7 +143,7 @@ def main():
 		SOURCE_PACKAGE[0] = given_args.file
 		filename = os.path.basename(given_args.file)
 		content = file.read()
-		package = ({ "filename" : filename }, { "content" : content })
+		package = { "filename" : filename, "content" : content }
 		json_str = json.dumps(package)
 		json_bytes = json_str.encode()
 		SOURCE_PACKAGE[1] = json_bytes

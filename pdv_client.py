@@ -2,10 +2,48 @@ import socket
 import argparse
 import netifaces
 import json
+import subprocess
+import os
 
 PDV_CLIENT_PORT = 400
 
 counter = 0
+
+def compile(package):
+	filename = package['filename']
+	print('Compiling %s' % filename)
+	slices = filename.split('.')
+	extension = slices[len(slices) - 1]
+	compiler = None
+	flags = ['-m64', '-Wall']
+	if extension == 'c':
+		print('This is C file')
+		compiler = 'gcc'
+	elif extension == 'cpp' or extension == 'cxx':
+		print('This is C++ file')
+		compiler = 'g++'
+		flags.append('-std=c++20')
+	else:
+		print('Error: File extension is not recognized')
+		return
+	if not os.path.exists('./.pdv_client/'):
+		os.mkdir('./.pdv_client')
+	disk_filepath = './.pdv_client/' + filename
+	with open(disk_filepath, "w") as file:
+		file.write(package['content'])
+	args = []
+	args.append(compiler)
+	args.extend(flags)
+	args.append('-I./')
+	args.append(disk_filepath)
+	args.append('-o')
+	exec_path = disk_filepath + ".exc"
+	args.append(exec_path)
+	result = subprocess.run(args)
+	print(result)
+	result = subprocess.run(exec_path)
+	print(result)
+	return
 
 def process(connected_socket, id):
 	s = connected_socket
@@ -56,6 +94,7 @@ def process(connected_socket, id):
 		json_str = buf.decode("utf-8")
 		package = json.loads(json_str)
 		print(package)
+		compile(package)
 	else:
 		print('[%d] Can\'t solve the challenge' % id)
 		return
