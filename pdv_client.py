@@ -25,7 +25,7 @@ def compile(package):
 		flags.append('-std=c++20')
 	else:
 		print('Error: File extension is not recognized')
-		return
+		return False
 	if not os.path.exists('./.pdv_client/'):
 		os.mkdir('./.pdv_client')
 	disk_filepath = './.pdv_client/' + filename
@@ -39,10 +39,50 @@ def compile(package):
 	args.append('-o')
 	exec_path = disk_filepath + ".exc"
 	args.append(exec_path)
-	result = subprocess.run(args)
+	try:
+		result = subprocess.run(args)
+	except:
+		print('Error: Failed to compile')
+		return False;
 	print(result)
-	result = subprocess.run(exec_path)
+	try:
+		result = subprocess.run(exec_path)
+	except:
+		print('Error: Failed to execute')
+		return False
 	print(result)
+	return True
+
+def send_result(s, id):
+	try:
+		s.sendall("From PDV Client: Result Available".encode())
+	except:
+		print('[%d] Failed to send result available notification' % id)
+		return
+		xml_data = None
+	try:
+		with open("result.xml", "r") as file:
+			xml_data = file.read()
+	except:
+		print('[%d] Failed to open result.xml file' % id)
+		return
+	try:
+		bytes = xml_data.encode()
+		s.sendall(len(bytes).to_bytes(4, byteorder="little"))
+		s.sendall(bytes)
+	except:
+		print('[%d] Failed to send contents of result.xml' % id)
+		return
+	try:
+		print('[%d] Waiting for ack from pdv host' % id)
+		buf = s.recv(1024)
+	except:
+		print('[%d] Failed to receive sck from pdv host' % id)
+		return
+	if not buf.decode("utf-8") == "From PDV Host: ACK":
+		print('[%d] Invalid response from pdv host' % id)
+	else:
+		print('[%d] PDV host has received the contents of result.xml' % id)
 	return
 
 def process(connected_socket, id):
@@ -89,12 +129,13 @@ def process(connected_socket, id):
 			print('[%d] Sending ACK')
 			s.sendall("From PDV Client: ACK".encode())
 		except:
-			print('Failed to send ACK')
+			print('[%d] Failed to send ACK' % id)
 			return
 		json_str = buf.decode("utf-8")
 		package = json.loads(json_str)
 		print(package)
-		compile(package)
+		if compile(package):
+			send_result(s, id)
 	else:
 		print('[%d] Can\'t solve the challenge' % id)
 		return

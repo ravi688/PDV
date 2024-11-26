@@ -21,6 +21,22 @@ def try_get_ip_addresses(interface):
 				addrs.append(ip_addresses['addr'])
 	return addrs
 
+# receives data of arbitrary length, the length of the data is specified in the first 4 bytes
+def receive_file(s):
+	buf = None
+	try:
+		buf = s.recv(4)
+	except:
+		print('Failed to receive data length')
+		return None
+	length = int.from_bytes(buf, byteorder="little")
+	try:
+		buf = s.recv(length)
+	except:
+		print('Failed to receive data')
+		return None
+	return buf
+
 def check_for_pdv_client(ip_address):
 	print(', checking for pdv client at port %d' % PDV_CLIENT_PORT, end = ' ')
 	try:
@@ -58,38 +74,60 @@ def check_for_pdv_client(ip_address):
 			s.close()
 			return
 		print('- found pdv client')
-		while True:
-			try:
-				print('Listening for file request')
-				buf = s.recv(1024)
-			except:
-				print('receive error')
-				s.close();
-				return
-			if not buf.decode("utf-8") == "From PDV Client: Please send file":
-				print('Invalid request received')
-				time.sleep(1.0)
-				continue
-			print('Sending file %s' % SOURCE_PACKAGE[0])
-			try:
-				s.sendall(len(SOURCE_PACKAGE[1]).to_bytes(4, byteorder='little'))
-				s.sendall(SOURCE_PACKAGE[1])
-			except:
-				print('send error')
-				s.close()
-				return
-			try:
-				print('Waiting for PDV client ack')
-				buf = s.recv(1024)
-			except:
-				print('failed to receive ack')
-				s.close()
-				return
-			if buf.decode("utf-8") == "From PDV Client: ACK":
-				print('PDV client has received file')
+		try:
+			print('Listening for file request')
+			buf = s.recv(1024)
+		except:
+			print('receive error')
+			s.close();
+			return
+		if not buf.decode("utf-8") == "From PDV Client: Please send file":
+			print('Invalid request received')
+			s.close()
+			return
+		print('Sending file %s' % SOURCE_PACKAGE[0])
+		try:
+			s.sendall(len(SOURCE_PACKAGE[1]).to_bytes(4, byteorder='little'))
+			s.sendall(SOURCE_PACKAGE[1])
+		except:
+			print('send error')
+			s.close()
+			return
+		try:
+			print('Waiting for PDV client ack')
+			buf = s.recv(1024)
+		except:
+			print('failed to receive ack')
+			s.close()
+			return
+		if buf.decode("utf-8") == "From PDV Client: ACK":
+			print('PDV client has received file')
+		else:
+			print('Invalid response received')
+		try:
+			print('Waiting for PDV client result notification')
+			buf = s.recv(1024)
+		except:
+			print('Failed to get result notification')
+			s.close()
+			return
+		xml_result = None
+		if buf.decode("utf-8") == "From PDV Client: Result Available":
+			print('Receiving result')
+			buf = receive_file(s)
+			if buf:
+				try:
+					s.sendall("From PDV Host: ACK".encode())
+				except:
+					print('Failed to send result receipt')
+					s.close()
+					return
 			else:
-				print('Invalid response received')
-			break
+				print('Failed to receive result')
+				s.close()
+				return
+		xml_result = buf.decode("utf-8")
+		print(xml_result)
 		# Instantiate a thread here for status listening for this pdv client
 	else:
 		print('- response is wrong')
