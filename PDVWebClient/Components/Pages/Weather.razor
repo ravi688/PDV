@@ -1,0 +1,80 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+<PageTitle>PDV Web Client</PageTitle>
+
+<h1>PDV Web Client</h1>
+
+<p>Code Repository for PDV is hosted on <a href="https://github.com/ravi688/PDV">Github</a></p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Entries</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>
+                    <p @onclick="() => OnEntryClick(forecast)">@String.Format("[{0}] {1}", forecast.Index, forecast.Title)</p>
+                    @if(forecast.IsVisible)
+                    {
+                        <p> @forecast.Description </p>
+                        <button class="btn btn-primary" @onclick="IncrementCount">Go To Source</button>
+                        <button class="btn btn-primary" @onclick="IncrementCount">Go To Results</button>
+                    }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+        Console.WriteLine("IncrementCount has been called");
+    }
+}
+
+@code {
+    private WeatherForecast[]? forecasts;
+
+    private void OnEntryClick(WeatherForecast forecast)
+    {
+        Console.WriteLine("Button Has been Clicked");
+        forecast.IsVisible = !forecast.IsVisible;
+    }
+
+    protected override void OnInitialized()
+    {
+        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
+        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        {
+            Index = index,
+            Title = "Gradient Descend Algorithm Performance",
+            Description = summaries[index] + " This experiment demonstrates impact of cache line sizes on false sharing",
+            IsVisible = false
+        }).ToArray();
+    }
+
+    private class WeatherForecast
+    {
+        public int Index { get; set; }
+        public string? Title { get; set; }
+        public string? Description { get; set; }
+        public bool IsVisible { get; set; }
+    }
+}
