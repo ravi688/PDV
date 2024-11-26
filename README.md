@@ -59,5 +59,5 @@ Additionally, it can also perform gradient descend to select the most suitable a
 - [ ] Once pdv host has sent the file to all the found pdv clients, it must wait on every pdv client to finish, if any pdv client reports errorneous status then display it but let others finish
 - [x] Create a standalone C (C++ compatible) header file to provide set of minimal and easy to use functions to generate an .xml file containing performance metrics data
 - [x] In pdv_client.py, it should invoke gcc (if file received has .c extension) or g++ (it has .cpp extension) to compile the source into an executable and run it to generate .xml file
-- [ ] After .xml file is generated, it should be send back to pdv host as response
+- [x] After .xml file is generated, it should be send back to pdv host as response
 - [ ] On pdv host side, it would receive .xml files from all the pdv clients (if success), and add entries to the centralized database by parsing the xml file.
