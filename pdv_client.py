@@ -1,5 +1,6 @@
 import socket
 import argparse
+import netifaces
 
 PDV_CLIENT_PORT = 400
 
@@ -48,6 +49,40 @@ def release_id(id):
 	unreserved_ids.append(id)
 	return
 
+def try_get_ip_addresses(interface):
+        addrs = []
+        address_families = netifaces.ifaddresses(interface)
+        if netifaces.AF_INET in address_families:
+                ipa_family = address_families[netifaces.AF_INET]
+                for ip_addresses in ipa_family:
+                        if 'addr' in ip_addresses:
+                                addrs.append(ip_addresses['addr'])
+        return addrs
+
+def bind_ip_address(s):
+	for interface in netifaces.interfaces():
+		if 'wl' in interface or 'en' in interface:
+			print('Trying to get INET addresses for interface: %s' % interface)
+			ip_addresses = try_get_ip_addresses(interface)
+			for ip_address in ip_addresses:
+				print('\tTrying binding listen socket at IP Address: %s, port: %d' % (ip_address, PDV_CLIENT_PORT), end = ' ')
+				try:
+					s.bind((ip_address, PDV_CLIENT_PORT))
+				except:
+					print(' - failed')
+					continue
+				print(' - success')
+				return True
+	try:
+		print('\tTrying at 127.0.0.1', end = ' ')
+		s.bind(("127.0.0.1", PDV_CLIENT_PORT))
+	except:
+		print(' - failed')
+		return False
+	print(' - success')
+	return True
+
+
 def main():
 	print('PDV Client version 1.0')
 	parser = argparse.ArgumentParser(description = 'PDV Client version 1.0')
@@ -62,7 +97,10 @@ def main():
 		print('Failed to create  socket')
 		return
 	s.setblocking(1)
-	s.bind(("192.168.1.20", PDV_CLIENT_PORT))
+	if not bind_ip_address(s):
+		s.close()
+		print('Failed to bind socket')
+		return
 	while True:
 		print('Listening on port %d ...' % PDV_CLIENT_PORT)
 		s.listen(1)
