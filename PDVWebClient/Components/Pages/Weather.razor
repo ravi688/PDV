@@ -27,6 +27,7 @@ else
                     <p @onclick="() => OnEntryClick(forecast)">@String.Format("[{0}] {1}", forecast.Index, forecast.Title)</p>
                     @if(forecast.IsVisible)
                     {
+                        <p> @forecast.Filename </p>
                         <p> @forecast.Description </p>
                         <button class="btn btn-primary" @onclick="IncrementCount">Go To Source</button>
                         <button class="btn btn-primary" @onclick="IncrementCount">Go To Results</button>
@@ -50,9 +51,9 @@ else
 }
 
 @code {
-    private WeatherForecast[]? forecasts;
+    private List<EntryData> forecasts = new List<EntryData>();
 
-    private void OnEntryClick(WeatherForecast forecast)
+    private void OnEntryClick(EntryData forecast)
     {
         Console.WriteLine("Button Has been Clicked");
         forecast.IsVisible = !forecast.IsVisible;
@@ -60,21 +61,41 @@ else
 
     protected override void OnInitialized()
     {
-        var summaries = new[] { "Freezing", "Bracing", "Chilly", "Cool", "Mild", "Warm", "Balmy", "Hot", "Sweltering", "Scorching" };
-        forecasts = Enumerable.Range(1, 5).Select(index => new WeatherForecast
+        string connectionString = "Server=192.168.1.18;Database=db_pdv;Uid=pdvwebclient;Pwd=Welcome@123;";
+        using(MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            Index = index,
-            Title = "Gradient Descend Algorithm Performance",
-            Description = summaries[index] + " This experiment demonstrates impact of cache line sizes on false sharing",
-            IsVisible = false
-        }).ToArray();
+            connection.Open();
+            Console.WriteLine("Connected to MySQL!");
+            string query = "SELECT * FROM db_pdv.main_table";
+            using(MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                using(MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while(reader.Read())
+                    {
+                        EntryData data = new EntryData();
+                        data.Index = (int)reader["id"];
+                        data.Title = reader["title"].ToString();
+                        data.Filename = reader["filename"].ToString();
+                        data.Description = reader["description"].ToString();
+                        data.Source = reader["source"].ToString();
+                        data.Result = reader["result"].ToString();
+                        data.IsVisible = false;
+                        forecasts.Add(data);
+                    }
+                }
+            }
+        }
     }
 
-    private class WeatherForecast
+    private class EntryData
     {
         public int Index { get; set; }
         public string? Title { get; set; }
+        public string? Filename { get; set; }
         public string? Description { get; set; }
+        public string? Source { get; set; }
+        public string? Result { get; set; }
         public bool IsVisible { get; set; }
     }
 }
