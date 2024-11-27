@@ -76,7 +76,8 @@ Additionally, it can also perform gradient descend to select the most suitable a
 - [x] After .xml file is generated, it should be send back to pdv host as response
 - [x] On pdv host side, it would receive .xml files from all the pdv clients (if success), and add entries to the centralized database by parsing the xml file.
 - [x] PDV web client would fetch the tables from the centralized database and render visual table in the browser
-- [ ] Release version 1.0 of PDV with self-contained PDVWebClient tarball, pdv_client.py, pdv_host.py, and Database setup script or schema
-- [ ] Test multiple times in byhyve virtual machines and docker
+- [ ] Rename pdv_client.py to pdv_runner.py and associated strings in python scripts
+- [ ] Release version 1.0 of PDV with self-contained PDVWebClient tarball, pdv_runner.py, pdv_host.py, and Database setup script or schema
+- [ ] Test multiple times in byhyve virtual machines and docker to make things are working without issues
 - [ ] Add time stamps for each entry registered in the mysql database
 - [ ] The result.xml file should also specify the exact command used to compile the source files - which will help reproduce the same results
