@@ -75,11 +75,13 @@ namespace pdv
 			stream << "\t<metrics title=\"" << m_title << "\">\n";
 			for(Entry& entry : m_entries)
 			{
-				stream << "\t\t<output desc=\"" << entry.output.first << "\" value=\"" << entry.output.second << "\"></output>\n";
-				stream << "\t\t<inputs>\n";
+				stream << "\t\t<run>\n";
+				stream << "\t\t\t<output desc=\"" << entry.output.first << "\" value=\"" << entry.output.second << "\"></output>\n";
+				stream << "\t\t\t<inputs>\n";
 				for(auto& pair : entry.inputs)
-					stream << "\t\t\t<input desc=\"" << pair.first << "\" value=\"" << pair.second << "\"></input>\n";
-				stream << "\t\t</inputs>\n";
+					stream << "\t\t\t\t<input desc=\"" << pair.first << "\" value=\"" << pair.second << "\"></input>\n";
+				stream << "\t\t\t</inputs>\n";
+				stream << "\t\t</run>\n";
 			}
 			stream << "\t</metrics>\n";
 			stream << "</chip>\n";
