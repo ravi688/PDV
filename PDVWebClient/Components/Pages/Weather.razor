@@ -1,5 +1,7 @@
 ﻿@page "/"
 @rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
 
 <PageTitle>PDV Web Client</PageTitle>
 
@@ -7,12 +9,6 @@
 
 <p>Code Repository for PDV is hosted on <a href="https://github.com/ravi688/PDV">Github</a></p>
 
-@if (forecasts == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
     <table class="table">
         <thead>
             <tr>
@@ -20,22 +16,18 @@ else
             </tr>
         </thead>
         <tbody>
-            @foreach (var forecast in forecasts)
+            @foreach (var entry in StateContainer.Entries)
             {
                 <tr>
                     <td>
-                    <p @onclick="() => OnEntryClick(forecast)">@String.Format("[{0}] {1}", forecast.Index, forecast.Title)</p>
-                    @if(forecast.IsVisible)
+                    <p @onclick="() => OnEntryClick(entry)">@String.Format("[{0}] {1}", entry.ID, entry.Title)</p>
+                    @if(entry.IsVisible)
                     {
-                        <p> @forecast.Filename </p>
-                        <p> @forecast.Description </p>
+                        <p> @entry.Filename </p>
+                        <p> @entry.Description </p>
                         <div class="button-container">
-                            <NavLink class="nav-link" href="source">
-                                <button class="btn btn-primary" @onclick="IncrementCount">Go To Source</button>
-                            </NavLink>
-                            <NavLink class="nav-link" href="result">
-                                <button class="btn btn-primary" @onclick="IncrementCount">Go To Results</button>
-                            </NavLink>
+                            <button class="btn btn-primary" @onclick="() => OnSourceClick(entry)">Go To Source</button>
+                            <button class="btn btn-primary" @onclick="() => OnResultClick(entry)">Go To Results</button>
                         </div>
                         <style>
                             .button-container {
@@ -52,65 +44,31 @@ else
             }
         </tbody>
     </table>
-}
 
 
 @code {
-    private int currentCount = 0;
-
-    private void IncrementCount()
+    private void OnSourceClick(EntryData entry)
     {
-        currentCount++;
-        Console.WriteLine("IncrementCount has been called");
+        string SourcePage = String.Format("source/{0}", entry.Index);
+        NavigationManager.NavigateTo(SourcePage);
+    }
+
+    private void OnResultClick(EntryData entry)
+    {
+        string ResultPage = String.Format("result/{0}", entry.Index);
+        NavigationManager.NavigateTo(ResultPage);
     }
 }
 
 @code {
-    private List<EntryData> forecasts = new List<EntryData>();
-
-    private void OnEntryClick(EntryData forecast)
+    private void OnEntryClick(EntryData entry)
     {
         Console.WriteLine("Button Has been Clicked");
-        forecast.IsVisible = !forecast.IsVisible;
+        entry.IsVisible = !entry.IsVisible;
     }
 
     protected override void OnInitialized()
     {
-        string connectionString = "Server=192.168.1.18;Database=db_pdv;Uid=pdvwebclient;Pwd=Welcome@123;";
-        using(MySqlConnection connection = new MySqlConnection(connectionString))
-        {
-            connection.Open();
-            Console.WriteLine("Connected to MySQL!");
-            string query = "SELECT * FROM db_pdv.main_table";
-            using(MySqlCommand command = new MySqlCommand(query, connection))
-            {
-                using(MySqlDataReader reader = command.ExecuteReader())
-                {
-                    while(reader.Read())
-                    {
-                        EntryData data = new EntryData();
-                        data.Index = (int)reader["id"];
-                        data.Title = reader["title"].ToString();
-                        data.Filename = reader["filename"].ToString();
-                        data.Description = reader["description"].ToString();
-                        data.Source = reader["source"].ToString();
-                        data.Result = reader["result"].ToString();
-                        data.IsVisible = false;
-                        forecasts.Add(data);
-                    }
-                }
-            }
-        }
-    }
-
-    private class EntryData
-    {
-        public int Index { get; set; }
-        public string? Title { get; set; }
-        public string? Filename { get; set; }
-        public string? Description { get; set; }
-        public string? Source { get; set; }
-        public string? Result { get; set; }
-        public bool IsVisible { get; set; }
+        List<EntryData> entries = new List<EntryData>();
     }
 }

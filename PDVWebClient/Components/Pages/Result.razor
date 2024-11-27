@@ -1,6 +1,52 @@
-@page "/result"
+@page "/result/{entryIndex:int}"
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
 
 <PageTitle>Result</PageTitle>
 
+<table class="table table-hover">
+  <thead>
+    <tr>
+      <th>CPU</th>
+      <th>Result.xml</th>
+    </tr>
+  </thead>
+  <tbody>
+    @foreach (var entry in entries)
+    {
+    <tr data-widget="expandable-table" aria-expanded="false">
+      <td>@entry.CPUModel</td>
+      <td>
+        <button class="btn btn-primary" @onclick="()=>OnSeeResultClick()">See Result</button>
+      </td>
+    </tr>
+    }
+  </tbody>
+</table>
+
+
 @code {
+    [Parameter]
+    public int entryIndex { get; set; }
+    private List<EntryData> entries = new List<EntryData>();
+
+    private void OnSeeResultClick()
+    {
+        
+    }
+
+    protected override void OnInitialized()
+    {
+        for(int i = 0; i < 30; ++i)
+        {
+            EntryData entry = new EntryData();
+            entry.CPUModel = $"CPU Model {i}";
+            entries.Add(entry);
+        }
+    }
+
+    private class EntryData
+    {
+        public string? CPUModel { get; set; }
+    }
 }
