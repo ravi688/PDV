@@ -205,7 +205,6 @@ def main():
 		print('Failed to create  socket')
 		return
 	s.setblocking(1)
-	s.settimeout(10)
 	if not bind_ip_address(s):
 		s.close()
 		print('Failed to bind socket')
