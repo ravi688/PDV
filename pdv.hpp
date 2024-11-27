@@ -7,6 +7,8 @@
 #include <initializer_list> // for std::initializer_list
 #include <vector> // for std::vector
 #include <utility> // for std::pair
+#include <array> // for std::array
+#include <cstdio> // for FILE* and popen()
 
 namespace pdv
 {
@@ -23,6 +25,30 @@ namespace pdv
 			Entry(const Entry&) = delete;
 		};
 		std::vector<Entry> m_entries;
+		std::string exec(const std::string& cmd)
+		{
+    			std::string result;
+    			FILE* pipe = popen(cmd.c_str(), "r");
+    			if (!pipe) {
+        			throw std::runtime_error("popen() failed!");
+    			}
+    			try {
+				char ch;
+				while((ch = fgetc(pipe)) != EOF)
+				{
+					if(ch == '\n')
+						break;
+					char buf[2] = { ch, 0 };
+					result.append(buf);
+				}
+    			} catch (...) {
+        			pclose(pipe);
+        			throw;
+    			}
+    			pclose(pipe);
+    			return result;
+		}
+
 	public:
 		metrics(const std::string_view title) noexcept : m_title(title) { }
 		metrics(const metrics&) = delete;
@@ -44,6 +70,8 @@ namespace pdv
 				return;
 			}
 			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
+			std::string cpuModel = exec("lscpu | grep 'Model name' | cut -f 2 -d ':' | awk '{$1=$1}1'");
+			stream << "<chip model=\"" << cpuModel << "\"/>\n";
 			stream << "<metrics title=\"" << m_title << "\">\n";
 			for(Entry& entry : m_entries)
 			{
