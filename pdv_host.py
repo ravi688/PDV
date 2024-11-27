@@ -32,13 +32,13 @@ def try_get_ip_addresses(interface):
 def receive_file(s):
 	buf = None
 	try:
-		buf = s.recv(4)
+		buf = s.recv(4, socket.MSG_WAITALL)
 	except:
 		print('Failed to receive data length')
 		return None
 	length = int.from_bytes(buf, byteorder="little")
 	try:
-		buf = s.recv(length)
+		buf = s.recv(length, socket.MSG_WAITALL)
 	except:
 		print('Failed to receive data')
 		return None
@@ -144,7 +144,7 @@ def check_for_pdv_client(ip_address):
 		print(' - send error occurred', end = ' ')
 		return
 	try:
-		buf = s.recv(len("I'm PDV Client"))
+		buf = s.recv(len("I'm PDV Client"), socket.MSG_WAITALL)
 	except:
 		s.close()
 		print(' - recv error ocurred', end = ' ')
@@ -160,7 +160,7 @@ def check_for_pdv_client(ip_address):
 		print('- found pdv client')
 		try:
 			print('Listening for file request')
-			buf = s.recv(len("From PDV Client: Please send file"))
+			buf = s.recv(len("From PDV Client: Please send file"), socket.MSG_WAITALL)
 		except:
 			print('receive error')
 			s.close();
@@ -179,7 +179,7 @@ def check_for_pdv_client(ip_address):
 			return
 		try:
 			print('Waiting for PDV client ack')
-			buf = s.recv(len("From PDV Client: ACK"))
+			buf = s.recv(len("From PDV Client: ACK"), socket.MSG_WAITALL)
 		except:
 			print('failed to receive ack')
 			s.close()
@@ -190,7 +190,7 @@ def check_for_pdv_client(ip_address):
 			print('Invalid response received')
 		try:
 			print('Waiting for PDV client result notification')
-			buf = s.recv(len("From PDV Client: Result Available"))
+			buf = s.recv(len("From PDV Client: Result Available"), socket.MSG_WAITALL)
 		except:
 			print('Failed to get result notification')
 			s.close()

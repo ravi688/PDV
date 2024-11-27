@@ -75,7 +75,7 @@ def send_result(s, id):
 		return
 	try:
 		print('[%d] Waiting for ack from pdv host' % id)
-		buf = s.recv(len("From PDV Host: ACK"))
+		buf = s.recv(len("From PDV Host: ACK"), socket.MSG_WAITALL)
 	except:
 		print('[%d] Failed to receive sck from pdv host' % id)
 		return
@@ -87,11 +87,11 @@ def send_result(s, id):
 
 def process(connected_socket, id):
 	s = connected_socket
-	try:
-		buf = s.recv(len("From PDV Host: Who are you?"))
-	except:
-		print('[%d] Failed to receive challenge' % id)
-		return
+	#try:
+	buf = s.recv(len("From PDV Host: Who are you?"), socket.MSG_WAITALL)
+	#except:
+	#	print('[%d] Failed to receive challenge' % id)
+	#	return
 	challenge = buf.decode("utf-8")
 	if challenge == "From PDV Host: Who are you?":
 		response = "I'm PDV Client".encode()
@@ -101,7 +101,7 @@ def process(connected_socket, id):
 			print('[%d] Failed to send response' % id)
 			return
 		try:
-			buf = s.recv(len("From PDV Host: ACK"))
+			buf = s.recv(len("From PDV Host: ACK"), socket.MSG_WAITALL)
 		except:
 			print('[%d] Failed to receive ack' % id)
 			return
@@ -115,13 +115,13 @@ def process(connected_socket, id):
 			print('[%d] Failed to send source package request %s' % (id, e))
 			return
 		try:
-			buf = s.recv(4)
+			buf = s.recv(4, socket.MSG_WAITALL)
 		except:
 			print('[%d] Failed to receive source package length' % id)
 			return
 		package_len = int.from_bytes(buf, byteorder='little')
 		try:
-			buf = s.recv(package_len)
+			buf = s.recv(package_len, socket.MSG_WAITALL)
 		except:
 			print('[%d] Failed to receive source package bytes' % id)
 			return
