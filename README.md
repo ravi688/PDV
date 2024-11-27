@@ -74,6 +74,6 @@ Additionally, it can also perform gradient descend to select the most suitable a
 - [x] Create a standalone C (C++ compatible) header file to provide set of minimal and easy to use functions to generate an .xml file containing performance metrics data
 - [x] In pdv_client.py, it should invoke gcc (if file received has .c extension) or g++ (it has .cpp extension) to compile the source into an executable and run it to generate .xml file
 - [x] After .xml file is generated, it should be send back to pdv host as response
-- [ ] On pdv host side, it would receive .xml files from all the pdv clients (if success), and add entries to the centralized database by parsing the xml file.
-- [ ] PDV web client would fetch the tables from the centralized database and render visual table in the browser
+- [x] On pdv host side, it would receive .xml files from all the pdv clients (if success), and add entries to the centralized database by parsing the xml file.
+- [x] PDV web client would fetch the tables from the centralized database and render visual table in the browser
 - [ ] The result.xml file should also specify the exact command used to compile the source files - which will help reproduce the same results
