@@ -71,17 +71,18 @@ namespace pdv
 			}
 			stream << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
 			std::string cpuModel = exec("lscpu | grep 'Model name' | cut -f 2 -d ':' | awk '{$1=$1}1'");
-			stream << "<chip model=\"" << cpuModel << "\"/>\n";
-			stream << "<metrics title=\"" << m_title << "\">\n";
+			stream << "<chip model=\"" << cpuModel << "\">\n";
+			stream << "\t<metrics title=\"" << m_title << "\">\n";
 			for(Entry& entry : m_entries)
 			{
-				stream << "\t<output desc=\"" << entry.output.first << "\" value=\"" << entry.output.second << "\"/>\n";
-				stream << "\t<inputs>\n";
+				stream << "\t\t<output desc=\"" << entry.output.first << "\" value=\"" << entry.output.second << "\"></output>\n";
+				stream << "\t\t<inputs>\n";
 				for(auto& pair : entry.inputs)
-					stream << "\t\t<input desc=\"" << pair.first << "\" value=\"" << pair.second << "\"/>\n";
-				stream << "\t</inputs>\n";
+					stream << "\t\t\t<input desc=\"" << pair.first << "\" value=\"" << pair.second << "\"></input>\n";
+				stream << "\t\t</inputs>\n";
 			}
-			stream << "</metrics>\n";
+			stream << "\t</metrics>\n";
+			stream << "</chip>\n";
 			stream.close();
 		}
 	};
