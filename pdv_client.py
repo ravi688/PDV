@@ -169,7 +169,7 @@ def try_get_ip_addresses(interface):
 def bind_ip_address(s):
 	s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	for interface in netifaces.interfaces():
-		if 'wl' in interface or 'en' in interface:
+		if 'wl' in interface or 'en' in interface or 're' in interface:
 			print('Trying to get INET addresses for interface: %s' % interface)
 			ip_addresses = try_get_ip_addresses(interface)
 			for ip_address in ip_addresses:
