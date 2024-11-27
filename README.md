@@ -3,24 +3,37 @@ A tool to automate running C++ snippets of algorithms and data structures on dif
 
 Why can't we use Github/Gitlab Runners and CI/CD? It's because it is a bit complex to achieve "Process just commited (pushed) file only".
 
-## Package Requirements
-### On Linux (Ubuntu)
+## Dependency/Package Requirements
+### For PDV Runners
+#### On Linux (Ubuntu)
 ```
-sudo pip install icmplib
 sudo pip install argparse
 sudo pip install netifaces
-sudo pip install mysqlclient
 sudo apt install lscpu
 ```
-### On FreeBSD (13.2)
+#### On FreeBSD (13.2)
 In super user mode
 ```
 pkg install python311
 pkg install py311-pip
 pip install netifces
+pkg install lscpu
+```
+### For PDV Host
+#### For Linux (Ubuntu)
+```
+sudo pip install argparse
+sudo pip install netifaces
+sudo pip install icmplib
+sudo pip install mysqlclient
+```
+#### For FreeBSD (13.2)
+In super user mode
+```
+pkg install python311
+pkg install py311-pip
 pip install icmplib
 pip install mysqlclient
-pkg install lscpu
 ```
 
 ## Overview
