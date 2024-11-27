@@ -129,7 +129,7 @@ def check_for_pdv_client(ip_address):
 		print('- socket error occurred', end = ' ')
 		return
 	s.setblocking(1)
-	s.settimeout(1)
+	s.settimeout(10)
 	try:
 		s.connect((ip_address, PDV_CLIENT_PORT))
 	except socket.error as e:
