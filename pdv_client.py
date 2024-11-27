@@ -75,7 +75,7 @@ def send_result(s, id):
 		return
 	try:
 		print('[%d] Waiting for ack from pdv host' % id)
-		buf = s.recv(1024)
+		buf = s.recv(len("From PDV Host: ACK"))
 	except:
 		print('[%d] Failed to receive sck from pdv host' % id)
 		return
@@ -88,7 +88,7 @@ def send_result(s, id):
 def process(connected_socket, id):
 	s = connected_socket
 	try:
-		buf = s.recv(1024)
+		buf = s.recv(len("From PDV Host: Who are you?"))
 	except:
 		print('[%d] Failed to receive challenge' % id)
 		return
@@ -101,7 +101,7 @@ def process(connected_socket, id):
 			print('[%d] Failed to send response' % id)
 			return
 		try:
-			buf = s.recv(1024)
+			buf = s.recv(len("From PDV Host: ACK"))
 		except:
 			print('[%d] Failed to receive ack' % id)
 			return
