@@ -1,4 +1,5 @@
-@page "/result/{entryIndex:int}"
+@page "/result/{entryID:int}"
+@rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject StateContainer StateContainer
 
@@ -15,9 +16,9 @@
     @foreach (var entry in entries)
     {
     <tr data-widget="expandable-table" aria-expanded="false">
-      <td>@entry.CPUModel</td>
+      <td>@entry.Chip</td>
       <td>
-        <button class="btn btn-primary" @onclick="()=>OnSeeResultClick()">See Result</button>
+        <button class="btn btn-primary" @onclick="()=>OnSeeResultClick(entry)">See Result</button>
       </td>
     </tr>
     }
@@ -27,26 +28,42 @@
 
 @code {
     [Parameter]
-    public int entryIndex { get; set; }
+    public int entryID { get; set; }
     private List<EntryData> entries = new List<EntryData>();
 
-    private void OnSeeResultClick()
+    private void OnSeeResultClick(EntryData entryData)
     {
-        
+        Console.WriteLine("Button clicked");
+        NavigationManager.NavigateTo($"CPUResult/{entryID}&{entryData.ID}");
     }
 
-    protected override void OnInitialized()
+    protected override void OnParametersSet()
     {
-        for(int i = 0; i < 30; ++i)
-        {
-            EntryData entry = new EntryData();
-            entry.CPUModel = $"CPU Model {i}";
-            entries.Add(entry);
+      string connectionString = "Server=192.168.1.18;Database=db_pdv;Uid=pdvwebclient;Pwd=Welcome@123;";
+      using(MySqlConnection connection = new MySqlConnection(connectionString))
+      {
+            connection.Open();
+            Console.WriteLine("Connected to MySQL (from CPUResult)!");
+            string query = $"SELECT * FROM db_pdv.result_table_{entryID}";
+            using(MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                using(MySqlDataReader reader = command.ExecuteReader())
+                {
+                    while(reader.Read())
+                    {
+                        EntryData result = new EntryData();
+                        result.ID = (int)(reader["id"]);
+                        result.Chip = reader["chip"].ToString();
+                        entries.Add(result);
+                    }
+                }
+            }
         }
     }
 
     private class EntryData
     {
-        public string? CPUModel { get; set; }
+        public int? ID { get; set; }
+        public string? Chip { get; set; }
     }
 }

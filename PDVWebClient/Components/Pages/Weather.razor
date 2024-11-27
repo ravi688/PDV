@@ -55,7 +55,7 @@
 
     private void OnResultClick(EntryData entry)
     {
-        string ResultPage = String.Format("result/{0}", entry.Index);
+        string ResultPage = String.Format("result/{0}", entry.ID);
         NavigationManager.NavigateTo(ResultPage);
     }
 }
@@ -65,10 +65,5 @@
     {
         Console.WriteLine("Button Has been Clicked");
         entry.IsVisible = !entry.IsVisible;
-    }
-
-    protected override void OnInitialized()
-    {
-        List<EntryData> entries = new List<EntryData>();
     }
 }
