@@ -8,6 +8,7 @@ import os
 import time
 import subprocess
 import MySQLdb
+from xml.dom.minidom import parseString
 
 PDV_CLIENT_PORT = 400
 # first element is the file name, second element packaged json data to be dispatched to pdv clients
@@ -99,8 +100,14 @@ def register_result_db(xml_result):
 	if not connection:
 		return False
 	cursor = connection.cursor()
+	chip_model = "Chip Model unavailable"
+	try:
+		document = parseString(xml_result)
+		chip_model = str(document.getElementsByTagName('chip')[0].getAttribute('model'))
+	except:
+		print('Failed to get chip model number, may be xml is invalid?')
 	xml_result = xml_result.replace('"', '\\"')
-	query = "INSERT INTO db_pdv.result_table_%d (chip, result) VALUES (\"%s\", \"%s\");" % (DB_ENTRY_ID, "Dummy Intel Chip", xml_result)
+	query = "INSERT INTO db_pdv.result_table_%d (chip, result) VALUES (\"%s\", \"%s\");" % (DB_ENTRY_ID, chip_model, xml_result)
 	print(query)
 	try:
 		cursor.execute(query)
