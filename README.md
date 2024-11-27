@@ -73,7 +73,10 @@ It should be run like the following:
 $ ./webpage_db_setup.sh <port number>
 ```
 
-### Desktop Client (Optional)
+## Getting Started (Installing)
+TODO
+
+## Desktop Client (Optional)
 The source snippets would generate large number of key-value pairs with keys being tuple of inputs and value being tuple of outputs. This data needs to be displayed in an elegant graphical way, which is done by Desktop Client software (based on [SGE](https://github.com/ravi688/VulkanRenderer)).
 This client software fetches data from the database and plots them on the screen in 3D or 2D, based on the type of data.
 Additionally, it can also perform gradient descend to select the most suitable algorithm or data structure and input values!
