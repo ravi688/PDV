@@ -9,6 +9,16 @@ PDV_CLIENT_PORT = 400
 
 counter = 0
 
+def recvall(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = bytearray()
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data.extend(packet)
+    return data
+
 def compile(package):
 	filename = package['filename']
 	print('Compiling %s' % filename)
@@ -75,7 +85,7 @@ def send_result(s, id):
 		return
 	try:
 		print('[%d] Waiting for ack from pdv host' % id)
-		buf = s.recv(len("From PDV Host: ACK"), socket.MSG_WAITALL)
+		buf = recvall(s, len("From PDV Host: ACK"))
 	except:
 		print('[%d] Failed to receive sck from pdv host' % id)
 		return
@@ -88,7 +98,7 @@ def send_result(s, id):
 def process(connected_socket, id):
 	s = connected_socket
 	#try:
-	buf = s.recv(len("From PDV Host: Who are you?"), socket.MSG_WAITALL)
+	buf = recvall(s, len("From PDV Host: Who are you?"))
 	#except:
 	#	print('[%d] Failed to receive challenge' % id)
 	#	return
@@ -101,7 +111,7 @@ def process(connected_socket, id):
 			print('[%d] Failed to send response' % id)
 			return
 		try:
-			buf = s.recv(len("From PDV Host: ACK"), socket.MSG_WAITALL)
+			buf = recvall(s, len("From PDV Host: ACK"))
 		except:
 			print('[%d] Failed to receive ack' % id)
 			return
@@ -115,13 +125,13 @@ def process(connected_socket, id):
 			print('[%d] Failed to send source package request %s' % (id, e))
 			return
 		try:
-			buf = s.recv(4, socket.MSG_WAITALL)
+			buf = recvall(s, 4)
 		except:
 			print('[%d] Failed to receive source package length' % id)
 			return
 		package_len = int.from_bytes(buf, byteorder='little')
 		try:
-			buf = s.recv(package_len, socket.MSG_WAITALL)
+			buf = recvall(s, package_len)
 		except:
 			print('[%d] Failed to receive source package bytes' % id)
 			return

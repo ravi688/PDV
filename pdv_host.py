@@ -18,6 +18,16 @@ DESCRIPTION = str()
 SOURCE = str()
 DB_ENTRY_ID = None
 
+def recvall(sock, n):
+    # Helper function to recv n bytes or return None if EOF is hit
+    data = bytearray()
+    while len(data) < n:
+        packet = sock.recv(n - len(data))
+        if not packet:
+            return None
+        data.extend(packet)
+    return data
+
 def try_get_ip_addresses(interface):
 	addrs = []
 	address_families = netifaces.ifaddresses(interface)
@@ -32,13 +42,13 @@ def try_get_ip_addresses(interface):
 def receive_file(s):
 	buf = None
 	try:
-		buf = s.recv(4, socket.MSG_WAITALL)
+		buf = recvall(s, 4)
 	except:
 		print('Failed to receive data length')
 		return None
 	length = int.from_bytes(buf, byteorder="little")
 	try:
-		buf = s.recv(length, socket.MSG_WAITALL)
+		buf = recvall(s, length)
 	except:
 		print('Failed to receive data')
 		return None
@@ -144,7 +154,7 @@ def check_for_pdv_client(ip_address):
 		print(' - send error occurred', end = ' ')
 		return
 	try:
-		buf = s.recv(len("I'm PDV Client"), socket.MSG_WAITALL)
+		buf = recvall(s, len("I'm PDV Client"))
 	except:
 		s.close()
 		print(' - recv error ocurred', end = ' ')
@@ -160,7 +170,7 @@ def check_for_pdv_client(ip_address):
 		print('- found pdv client')
 		try:
 			print('Listening for file request')
-			buf = s.recv(len("From PDV Client: Please send file"), socket.MSG_WAITALL)
+			buf = recvall(s, len("From PDV Client: Please send file"))
 		except:
 			print('receive error')
 			s.close();
@@ -179,7 +189,7 @@ def check_for_pdv_client(ip_address):
 			return
 		try:
 			print('Waiting for PDV client ack')
-			buf = s.recv(len("From PDV Client: ACK"), socket.MSG_WAITALL)
+			buf = recvall(s, len("From PDV Client: ACK"))
 		except:
 			print('failed to receive ack')
 			s.close()
@@ -190,7 +200,7 @@ def check_for_pdv_client(ip_address):
 			print('Invalid response received')
 		try:
 			print('Waiting for PDV client result notification')
-			buf = s.recv(len("From PDV Client: Result Available"), socket.MSG_WAITALL)
+			buf = recvall(s, len("From PDV Client: Result Available"))
 		except:
 			print('Failed to get result notification')
 			s.close()
