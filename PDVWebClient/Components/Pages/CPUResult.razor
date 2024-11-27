@@ -1,0 +1,47 @@
+@page "/CPUResult/{entryID:int}&{resultID:int}"
+@attribute [StreamRendering]
+
+@if(Result == null)
+{
+   <p><em>Loading...</em></p>
+}
+else
+{
+  <pre>@Result.XMLResult</pre>
+}
+
+@code
+{
+  [Parameter]
+  public int resultID { get; set; }
+  [Parameter]
+  public int entryID { get; set; }
+  private class ResultData
+  {
+    public int? ID { get; set; }
+    public string? Chip { get; set; }
+    public string? XMLResult { get; set; }
+  };
+  private ResultData? Result;
+  protected override void OnParametersSet()
+  {
+      string connectionString = "Server=192.168.1.18;Database=db_pdv;Uid=pdvwebclient;Pwd=Welcome@123;";
+      using(MySqlConnection connection = new MySqlConnection(connectionString))
+      {
+            connection.Open();
+            Console.WriteLine("Connected to MySQL (from CPUResult)!");
+            string query = $"SELECT * FROM db_pdv.result_table_{entryID} WHERE id={resultID}";
+            using(MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                using(MySqlDataReader reader = command.ExecuteReader())
+                {
+                    reader.Read();
+                    Result = new ResultData();
+                    Result.ID = (int)(reader["id"]);
+                    Result.Chip = reader["chip"].ToString();
+                    Result.XMLResult = reader["result"].ToString();
+                }
+            }
+        }
+    } 
+}

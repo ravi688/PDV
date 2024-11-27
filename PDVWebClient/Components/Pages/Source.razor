@@ -1,0 +1,16 @@
+@page "/source/{entryIndex:int}"
+@inject StateContainer StateContainer
+
+<PageTitle>StateContainer.Entries[(int)entryIndex].Filename</PageTitle>
+
+<pre>@StateContainer.Entries[(int)entryIndex].Source</pre>
+
+@code {
+	[Parameter]
+	public int entryIndex { get; set; }
+
+	protected override void OnParametersSet()
+	{
+
+	}
+}

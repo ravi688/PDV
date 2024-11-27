@@ -1,0 +1,69 @@
+﻿@page "/"
+@rendermode InteractiveServer
+@inject NavigationManager NavigationManager
+@inject StateContainer StateContainer
+
+<PageTitle>PDV Web Client</PageTitle>
+
+<h1>PDV Web Client</h1>
+
+<p>Code Repository for PDV is hosted on <a href="https://github.com/ravi688/PDV">Github</a></p>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Entries</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var entry in StateContainer.Entries)
+            {
+                <tr>
+                    <td>
+                    <p @onclick="() => OnEntryClick(entry)">@String.Format("[{0}] {1}", entry.ID, entry.Title)</p>
+                    @if(entry.IsVisible)
+                    {
+                        <p> @entry.Filename </p>
+                        <p> @entry.Description </p>
+                        <div class="button-container">
+                            <button class="btn btn-primary" @onclick="() => OnSourceClick(entry)">Go To Source</button>
+                            <button class="btn btn-primary" @onclick="() => OnResultClick(entry)">Go To Results</button>
+                        </div>
+                        <style>
+                            .button-container {
+                                display: flex;
+                                justify-content: left;
+                            }
+                            .btn {
+                                margin: 5px;
+                            }
+                        </style>
+                    }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+@code {
+    private void OnSourceClick(EntryData entry)
+    {
+        string SourcePage = String.Format("source/{0}", entry.Index);
+        NavigationManager.NavigateTo(SourcePage);
+    }
+
+    private void OnResultClick(EntryData entry)
+    {
+        string ResultPage = String.Format("result/{0}", entry.ID);
+        NavigationManager.NavigateTo(ResultPage);
+    }
+}
+
+@code {
+    private void OnEntryClick(EntryData entry)
+    {
+        Console.WriteLine("Button Has been Clicked");
+        entry.IsVisible = !entry.IsVisible;
+    }
+}
