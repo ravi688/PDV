@@ -7,10 +7,15 @@ import ipaddress
 import os
 import time
 import subprocess
+import MySQLdb
 
 PDV_CLIENT_PORT = 400
 # first element is the file name, second element packaged json data to be dispatched to pdv clients
 SOURCE_PACKAGE = [str(), bytes()]
+TITLE = str()
+DESCRIPTION = str()
+SOURCE = str()
+DB_ENTRY_ID = None
 
 def try_get_ip_addresses(interface):
 	addrs = []
@@ -37,6 +42,77 @@ def receive_file(s):
 		print('Failed to receive data')
 		return None
 	return buf
+
+def register_entry_db():
+	try:
+		connection = MySQLdb.connect(host="192.168.1.18", user="pdvhost", passwd="Welcome@123", db="db_pdv")
+	except:
+		print('Failed to establish connection to mysql database')
+		return None
+	if not connection:
+		print('Connection is null')
+		return None
+	cursor = connection.cursor()
+	query = "INSERT INTO db_pdv.main_table (filename, title, description, source) VALUES (\"%s\",\"%s\",\"%s\",\"%s\");" % (SOURCE_PACKAGE[0], TITLE, DESCRIPTION, SOURCE)
+	print(query)
+	try:
+		cursor.execute(query)
+	except:
+		print('Failed to insert into db_pdv.main_table')
+		connection.close()
+		return None
+	try:
+		cursor.execute("SELECT LAST_INSERT_ID();")
+	except:
+		connection.close()
+		return None
+	row = cursor.fetchone()
+	entry_id = int(row[0])
+	print('entry id: %d' % entry_id)
+	query = "CREATE TABLE db_pdv.result_table_%d (id INT AUTO_INCREMENT PRIMARY KEY, chip VARCHAR(255), result TEXT);" % (entry_id)
+	print(query)
+	try:
+		cursor.execute(query)
+	except:
+		connection.close()
+		return None
+	try:
+		connection.commit()
+	except:
+		connecion.close()
+		return None
+	connection.close()
+	return entry_id
+
+def register_result_db(xml_result):
+	global DB_ENTRY_ID
+	if not DB_ENTRY_ID:
+		DB_ENTRY_ID = register_entry_db()
+		if not DB_ENTRY_ID:
+			print('Failed to create database entry')
+			return False
+	try:
+		connection = MySQLdb.connect(host="192.168.1.18", user="pdvhost", passwd="Welcome@123", db="db_pdv")
+	except:
+		print('Failed to establish connection with mysql database')
+		return False
+	if not connection:
+		return False
+	cursor = connection.cursor()
+	xml_result = xml_result.replace('"', '\\"')
+	query = "INSERT INTO db_pdv.result_table_%d (chip, result) VALUES (\"%s\", \"%s\");" % (DB_ENTRY_ID, "Dummy Intel Chip", xml_result)
+	print(query)
+	try:
+		cursor.execute(query)
+	except:
+		connection.close()
+		return False
+	try:
+		connection.commit()
+	except:
+		connection.close()
+		return False
+	return True
 
 def check_for_pdv_client(ip_address):
 	print(', checking for pdv client at port %d' % PDV_CLIENT_PORT, end = ' ')
@@ -129,6 +205,11 @@ def check_for_pdv_client(ip_address):
 				return
 		xml_result = buf.decode("utf-8")
 		print(xml_result)
+		print('Registering into mysql database...')
+		#try:
+		register_result_db(xml_result)
+		#except:
+		#	print('Failed to register into mysql database')
 		# Instantiate a thread here for status listening for this pdv client
 	else:
 		print('- response is wrong')
@@ -172,7 +253,7 @@ def main():
 	parser.add_argument('--port', action = "store", dest = "pdv_port", type=int, required=False)
 	parser.add_argument('--ipa_file', action = "store", dest = "ipa_file", type=str, required=False)
 	parser.add_argument('--file', action = "store", dest = "file", type=str, required=True)
-	parser.add_argument('--title', action = "store", dest = "message", type=str, required=True)
+	parser.add_argument('--title', action = "store", dest = "title", type=str, required=True)
 	parser.add_argument('--description', action = "store", dest = "description", type=str, required=False)
 	given_args = parser.parse_args()
 	description = given_args.description
@@ -195,6 +276,11 @@ def main():
 				print('Warning: no description is provided')
 				description = 'No description provided'
 	print('Description: %s' % description)
+	global DESCRIPTION
+	global TITLE
+	global SOURCE
+	DESCRIPTION = description.replace('"', '\\"')
+	TITLE = given_args.title.replace('"', '\\"')
 	if given_args.pdv_port:
 		global PDV_CLIENT_PORT
 		PDV_CLIENT_PORT = given_args.pdv_port
@@ -203,10 +289,12 @@ def main():
 		SOURCE_PACKAGE[0] = given_args.file
 		filename = os.path.basename(given_args.file)
 		content = file.read()
+		SOURCE = content
 		package = { "filename" : filename, "content" : content }
 		json_str = json.dumps(package)
 		json_bytes = json_str.encode()
 		SOURCE_PACKAGE[1] = json_bytes
+	SOURCE = SOURCE.replace('"', '\\"')
 	if given_args.ipa_file:
 		file = open(given_args.ipa_file, "r")
 		json_str = file.read()
