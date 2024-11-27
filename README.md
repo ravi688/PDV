@@ -10,6 +10,7 @@ sudo pip install icmplib
 sudo pip install argparse
 sudo pip install netifaces
 sudo pip install mysqlclient
+sudo apt install lscpu
 ```
 ### On FreeBSD (13.2)
 In super user mode
@@ -19,6 +20,7 @@ pkg install py311-pip
 pip install netifces
 pip install icmplib
 pip install mysqlclient
+pkg install lscpu
 ```
 
 ## Overview
