@@ -78,7 +78,7 @@ The following parameters need to be specified while executing the script:
 - `DB_PASSWORD`: Password for DB_USERNAME
 - `DB_SERVER`: IP address of the mysql server (more in mysql database section)
 ```
-sudo apt-get install -y dotnet-sdk-9.0
+sudo apt-get install -y dotnet-host-8.0
 sudo apt-get install -y dotnet-runtime-9.0
 git clone https://github.com/ravi688/PDV
 cd PDV
