@@ -42,7 +42,7 @@ There are three components which together make PDV work
 This is the main script which manages everything and is supposed to be run everytime you want to run tests and upload data to the database.
 It should be run like the following:
 ```
-$ sudo python pdv_host.py --port 400 --file main.cpp  --message “Linked List v/s Vector Test”
+$ sudo python pdv_host.py --port 400 --file main.cpp  --title “Linked List v/s Vector Test” --description "This experiment demonstrates performance of vector vs linked list"
 Searching for PDV runners….
 Found 2 runners
 1. Core i5 12400
@@ -66,15 +66,36 @@ g++ -std=c++20 -lpdv -I$(pkg-config pdv –flags) <main.cpp> -o ./main
 Sending result to pdv host…
 Done!
 ```
-### Bash script to setup Database and WebPage (webpage_db_setup.sh)
-This script only need to be run once to setup webpage and database.
-It should be run like the following:
-```
-$ ./webpage_db_setup.sh <port number>
-```
 
 ## Getting Started (Installing)
-TODO
+### Setting up PDV Web Client server (Machine1)
+You'll need .net framework in Ubuntu, and execute `install.sh` bash script in sudo mode. This script builds the blazor web app, prepares the systemd service file, and installs into the /etc/systemd/system directory.
+
+The following parameters need to be specified while executing the script:
+- `URL`: This the url on which you would like to access the web client app
+- `DB_NAME`: The database name in mysql (more in mysql database section)
+- `DB_USERNAME`: Username registered in the mysql data which the web app uses to read data from the database 'DB_NAME'
+- `DB_PASSWORD`: Password for DB_USERNAME
+- `DB_SERVER`: IP address of the mysql server (more in mysql database section)
+```
+sudo apt-get install -y dotnet-sdk-9.0
+sudo apt-get install -y dotnet-runtime-9.0
+git clone https://github.com/ravi688/PDV
+cd PDV
+sudo URL="http://192.168.1.15:80" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB_PASSWORD="1234" DB_SERVER="192.168.1.18" ./install.sh
+```
+### Setting up Mysql Database server (Machine2)
+You'll need to install mysql-server in Ubuntu or any other linux distro and execute `./db_setup.sh` bash script in sudo mode. This script creates a database 'db_pdv', a table 'db_pdv.main_table' and creates users.
+
+The following parameters need to be specified while executing the script:
+- `WC_IPA`: IP address of the web client server you just setup in the previou section
+- `DB_NAME`: The database name in which pdv_host.py will store data to
+- `DB_USERNAME`: Username for the web client in mysql database to allow web client access the database
+- `DB_SERVER`: IP address of this machine, the mysql server
+```
+sudo apt-get install mysql-server
+sudo WC_IPA="192.168.1.15" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB_PASSWORD="Welcome@123" DB_SERVER="192.168.1.18" ./db_setup.sh
+```
 
 ## Desktop Client (Optional)
 The source snippets would generate large number of key-value pairs with keys being tuple of inputs and value being tuple of outputs. This data needs to be displayed in an elegant graphical way, which is done by Desktop Client software (based on [SGE](https://github.com/ravi688/VulkanRenderer)).
