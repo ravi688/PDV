@@ -86,6 +86,8 @@ sudo URL="http://192.168.1.15:80" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB
 ### Setting up Mysql Database server (Machine2)
 You'll need to install mysql-server in Ubuntu or any other linux distro and execute `./db_setup.sh` bash script in sudo mode. This script creates a database 'db_pdv', a table 'db_pdv.main_table' and creates users.
 
+NOTE: You may also configure the file at `/etc/mysql/mysql.conf.d/mysqld.cnf` to bind mysql's server socket to a different ip address (must of some NIC on the same computer) other than 127.0.0.1 (default one).
+
 The following parameters need to be specified while executing the script:
 - `WC_IPA`: IP address of the web client server you just setup in the previou section
 - `DB_NAME`: The database name in which pdv_host.py will store data to
