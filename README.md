@@ -42,7 +42,7 @@ There are three components which together make PDV work
 This is the main script which manages everything and is supposed to be run everytime you want to run tests and upload data to the database.
 It should be run like the following:
 ```
-$ sudo python pdv_host.py --port 400 --file main.cpp  --title “Linked List v/s Vector Test” --description "This experiment demonstrates performance of vector vs linked list"
+$ sudo python pdv_host.py --port 400 --db_server="192.168.1.18" --db_passwd="abcd" --file main.cpp  --title “Linked List v/s Vector Test” --description "This experiment demonstrates performance of vector vs linked list"
 Searching for PDV runners….
 Found 2 runners
 1. Core i5 12400
@@ -96,7 +96,7 @@ The following parameters need to be specified while executing the script:
 ```
 sudo apt-get install mysql-server
 git clone https//github.com/ravi688/PDV
-sudo WC_IPA="192.168.1.15" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB_PASSWORD="Welcome@123" DB_SERVER="192.168.1.18" ./db_setup.sh
+sudo WC_IPA="192.168.1.15" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB_PASSWORD="1234" DB_SERVER="192.168.1.18" PDV_HOST_IPA="192.168.1.22" PDV_HOST_PSWD="abcd" ./db_setup.sh
 ```
 ### Setting up PDV Runners (Machine3)
 You'll need to install dependency packages mentioned in the very first section, clone the repo and run `pdv_runner.py` script in python.
@@ -110,13 +110,15 @@ sudo python pdv_runner.py --port 400
 You'll need to install dependency packages mentioned in the very first section, clone the repo and run `pdv_host.py` script in python.
 The following parameters need to be specified:
  - `--port`: Port number of pdv runners, it must match with ones specified while running pdv_runner.py
+ - '--db_server': IP address of the database server
+ - '--db_passwd': Password of the 'pdvhost' user, this must match with 
  - `--ipa_file`: (optional) This file contains list of key value pairs ("dummy names of runner machines", "their ip adress")
  - `--file`: Path to the C and C++ source file which need to be commited
  - `--title`: Title of the experiment
  - `--description`: (optional) Description of the expriment, if not specified then, 'nano' text editor will popup to let you enter the description
 ```
 git clone https://github.com/ravi688/PDV
-sudo python pdv_host.py --port 400 --ipa_file pdv_clients.json --file main.cpp --title "Parallel Merge Sort --description "This experiment shows parallel merge sort in C++"
+sudo python pdv_host.py --port 400 --db_server="192.168.1.18" --db_passwd="abcd" --ipa_file pdv_clients.json --file main.cpp --title "Parallel Merge Sort --description "This experiment shows parallel merge sort in C++"
 ```
 The contents of the pdv_clients.json file should be like as follows:
 ```
