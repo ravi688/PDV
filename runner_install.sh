@@ -40,7 +40,7 @@ WantedBy=multi-user.target
 	else
 		cp ${SERVICE_NAME}.service $SERVICE_PATH
 		systemctl start $SERVICE_NAME
-		systemctl enable $SERVICE_NAME
+		systemctl enable $SERVICE_NAME.service
 		systemctl daemon-reload
 		systemctl restart $SERVICE_NAME
 	fi
