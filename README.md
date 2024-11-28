@@ -81,6 +81,7 @@ The following parameters need to be specified while executing the script:
 sudo apt install -y dotnet-sdk-8.0
 git clone https://github.com/ravi688/PDV
 cd PDV
+chmod +x ./install.sh
 sudo URL="http://192.168.1.15:80" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB_PASSWORD="1234" DB_SERVER="192.168.1.18" ./install.sh
 ```
 ### Setting up Mysql Database server (Machine2)
@@ -105,6 +106,11 @@ The following parameters need to be specified:
 ```
 git clone https://github.com/ravi688/PDV
 sudo python pdv_runner.py --port 400
+```
+To install the script as service, do the following:
+```
+chmod +x ./runner_install.sh
+sudo PORT=400 ./runner_install.sh
 ```
 ### Setting up PDV Host and making first commit (Machine4)
 You'll need to install dependency packages mentioned in the very first section, clone the repo and run `pdv_host.py` script in python.
