@@ -48,6 +48,7 @@ public class StateContainer
 
  	public void Initialize(IConfiguration Configuration)
  	{
+        entries.Clear();
         string connectionString = GetDBString(Configuration);
         using(MySqlConnection connection = new MySqlConnection(connectionString))
         {
