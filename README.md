@@ -118,8 +118,8 @@ sudo PORT=400 ./runner_install.sh
 You'll need to install dependency packages mentioned in the very first section, clone the repo and run `pdv_host.py` script in python.
 The following parameters need to be specified:
  - `--port`: Port number of pdv runners, it must match with ones specified while running pdv_runner.py
- - '--db_server': IP address of the database server
- - '--db_passwd': Password of the 'pdvhost' user, this must match with 
+ - `--db_server`: IP address of the database server
+ - `--db_passwd`: Password of the 'pdvhost' user, this must match with 
  - `--ipa_file`: (optional) This file contains list of key value pairs ("dummy names of runner machines", "their ip adress")
  - `--file`: Path to the C and C++ source file which need to be commited
  - `--title`: Title of the experiment
