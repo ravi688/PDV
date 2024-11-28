@@ -94,7 +94,37 @@ The following parameters need to be specified while executing the script:
 - `DB_SERVER`: IP address of this machine, the mysql server
 ```
 sudo apt-get install mysql-server
+git clone https//github.com/ravi688/PDV
 sudo WC_IPA="192.168.1.15" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB_PASSWORD="Welcome@123" DB_SERVER="192.168.1.18" ./db_setup.sh
+```
+### Setting up PDV Runners (Machine3)
+You'll need to install dependency packages mentioned in the very first section, clone the repo and run `pdv_runner.py` script in python.
+The following parameters need to be specified:
+ - `--port`: The port number at which to listen, this must be the same as what is specified while running `pdv_host.py` script
+```
+git clone https://github.com/ravi688/PDV
+sudo python pdv_runner.py --port 400
+```
+### Setting up PDV Host (Machine4)
+You'll need to install dependency packages mentioned in the very first section, clone the repo and run `pdv_host.py` script in python.
+The following parameters need to be specified:
+ - `--port`: Port number of pdv runners, it must match with ones specified while running pdv_runner.py
+ - `--ipa_file`: (optional) This file contains list of key value pairs ("dummy names of runner machines", "their ip adress")
+ - `--file`: Path to the C and C++ source file which need to be commited
+ - `--title`: Title of the experiment
+ - `--description`: (optional) Description of the expriment, if not specified then, 'nano' text editor will popup to let you enter the description
+```
+git clone https://github.com/ravi688/PDV
+sudo python pdv_host.py --port 400 --ipa_file pdv_clients.json --file main.cpp --title "Parallel Merge Sort --description "This experiment shows parallel merge sort in C++"
+```
+The contents of the pdv_clients.json file should be like as follows:
+```
+{
+	"Intel Core i5 12400" : "192.168.1.19",
+	"AMD Ryzen 5 5600G" : "192.168.1.20",
+	"Intel Core i3 10100F" : "192.168.1.15",
+	"Intel Core i5 8350U" : "192.168.1.18"
+}
 ```
 
 ## Desktop Client (Optional)
