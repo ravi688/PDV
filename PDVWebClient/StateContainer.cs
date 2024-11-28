@@ -30,9 +30,26 @@ public class StateContainer
 
  	private void NotifyStateChanged() => OnChange?.Invoke();
 
- 	public StateContainer()
+    public static string GetDBString(IConfiguration Configuration)
+    {
+            string databaseServer = Configuration["databaseServer"];
+            if(databaseServer == null)
+                databaseServer = "local_host";
+            string databaseName = Configuration["databaseName"];
+            if(databaseName == null)
+                databaseName = "db_pdv";
+            string databaseUser = Configuration["databaseUser"];
+            if(databaseUser == null)
+                databaseUser = "pdvwebclient";
+            string password = Configuration["dbUserPassword"];
+        string connectionString = String.Format("Server={0};Database={1};Uid={2};Pwd={3};", databaseServer, databaseName, databaseUser, password);
+        Console.WriteLine(connectionString);
+        return connectionString;
+    }
+
+ 	public void Initialize(IConfiguration Configuration)
  	{
-        string connectionString = "Server=192.168.1.18;Database=db_pdv;Uid=pdvwebclient;Pwd=Welcome@123;";
+        string connectionString = GetDBString(Configuration);
         using(MySqlConnection connection = new MySqlConnection(connectionString))
         {
             connection.Open();

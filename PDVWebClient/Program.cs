@@ -1,12 +1,12 @@
 using PDVWebClient.Components;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddScoped<StateContainer>();
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddScoped<StateContainer>();
 
 var app = builder.Build();
 

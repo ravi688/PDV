@@ -1,5 +1,6 @@
 @page "/source/{entryIndex:int}"
 @inject StateContainer StateContainer
+@inject IConfiguration Configuration
 
 <PageTitle>StateContainer.Entries[(int)entryIndex].Filename</PageTitle>
 
@@ -11,6 +12,6 @@
 
 	protected override void OnParametersSet()
 	{
-
+        StateContainer.Initialize(Configuration);
 	}
 }

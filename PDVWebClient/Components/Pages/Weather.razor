@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject StateContainer StateContainer
+@inject IConfiguration Configuration
 
 <PageTitle>PDV Web Client</PageTitle>
 
@@ -61,6 +62,11 @@
 }
 
 @code {
+    protected override async Task OnInitializedAsync()
+    {
+        await Task.Delay(1);
+        StateContainer.Initialize(Configuration);
+    }
     private void OnEntryClick(EntryData entry)
     {
         Console.WriteLine("Button Has been Clicked");

@@ -2,6 +2,7 @@
 @rendermode InteractiveServer
 @inject NavigationManager NavigationManager
 @inject StateContainer StateContainer
+@inject IConfiguration Configuration
 
 <PageTitle>Result</PageTitle>
 
@@ -39,7 +40,7 @@
 
     protected override void OnParametersSet()
     {
-      string connectionString = "Server=192.168.1.18;Database=db_pdv;Uid=pdvwebclient;Pwd=Welcome@123;";
+      string connectionString = StateContainer.GetDBString(Configuration);
       using(MySqlConnection connection = new MySqlConnection(connectionString))
       {
             connection.Open();

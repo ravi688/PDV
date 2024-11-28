@@ -1,5 +1,7 @@
 @page "/CPUResult/{entryID:int}&{resultID:int}"
 @attribute [StreamRendering]
+@inject StateContainer StateContainer
+@inject IConfiguration Configuration
 
 @if(Result == null)
 {
@@ -25,7 +27,7 @@ else
   private ResultData? Result;
   protected override void OnParametersSet()
   {
-      string connectionString = "Server=192.168.1.18;Database=db_pdv;Uid=pdvwebclient;Pwd=Welcome@123;";
+      string connectionString = StateContainer.GetDBString(Configuration);
       using(MySqlConnection connection = new MySqlConnection(connectionString))
       {
             connection.Open();
