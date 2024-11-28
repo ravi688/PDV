@@ -8,7 +8,6 @@ public class EntryData
 	public string? Filename { get; set; }
 	public string? Description { get; set; }
 	public string? Source { get; set; }
-	public string? Result { get; set; }
 	public bool IsVisible { get; set; }
 }
 
@@ -69,7 +68,6 @@ public class StateContainer
                         data.Filename = reader["filename"].ToString();
                         data.Description = reader["description"].ToString();
                         data.Source = reader["source"].ToString();
-                        data.Result = reader["result"].ToString();
                         data.IsVisible = false;
                         entries.Add(data);
                         ++index;
