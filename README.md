@@ -10,6 +10,7 @@ Why can't we use Github/Gitlab Runners and CI/CD? It's because it is a bit compl
 sudo pip install argparse
 sudo pip install netifaces
 sudo apt install lscpu
+sudo apt install python-is-python3
 ```
 #### On FreeBSD (13.2)
 In super user mode
@@ -26,6 +27,7 @@ sudo pip install argparse
 sudo pip install netifaces
 sudo pip install icmplib
 sudo pip install mysqlclient
+sudo apt install python-is-python3
 ```
 #### For FreeBSD (13.2)
 In super user mode
