@@ -1,7 +1,7 @@
 # PDV
 A tool to automate running C++ snippets of algorithms and data structures on different CPUs, collect performance data, and display them on a webpage.
 
-Why can't we use Github/Gitlab Runners and CI/CD? It's because it is a bit complex to achieve "Process just commited (pushed) file only".
+Why can't we use Github/Gitlab Runners and CI/CD? It's because it is a bit complex to achieve "Process just commited (pushed) file only or at least I don't know how to achieve this using Gitlab Runners. Also, working on this kind of project is a good exercise for me to get familiar with fundamentals of Mysql, and Blazor.
 
 ## Dependency/Package Requirements
 ### For PDV Runners
