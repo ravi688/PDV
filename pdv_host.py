@@ -18,6 +18,11 @@ DESCRIPTION = str()
 SOURCE = str()
 DB_ENTRY_ID = None
 
+DB_SERVER="127.0.0.1"
+DB_USER="pdvhost"
+DB_PASSWD="Welcome@123"
+DB_NAME="db_pdv"
+
 def recvall(sock, n):
     # Helper function to recv n bytes or return None if EOF is hit
     data = bytearray()
@@ -56,7 +61,7 @@ def receive_file(s):
 
 def register_entry_db():
 	try:
-		connection = MySQLdb.connect(host="192.168.1.18", user="pdvhost", passwd="Welcome@123", db="db_pdv")
+	connection = MySQLdb.connect(host=DB_SERVER, user=DB_USER, passwd=DB_PASSWD, db=DB_NAME)
 	except:
 		print('Failed to establish connection to mysql database')
 		return None
@@ -67,7 +72,7 @@ def register_entry_db():
 	query = "INSERT INTO db_pdv.main_table (filename, title, description, source) VALUES (\"%s\",\"%s\",\"%s\",\"%s\");" % (SOURCE_PACKAGE[0], TITLE, DESCRIPTION, SOURCE)
 	print(query)
 	try:
-		cursor.execute(query)
+	cursor.execute(query)
 	except:
 		print('Failed to insert into db_pdv.main_table')
 		connection.close()
@@ -103,7 +108,7 @@ def register_result_db(xml_result):
 			print('Failed to create database entry')
 			return False
 	try:
-		connection = MySQLdb.connect(host="192.168.1.18", user="pdvhost", passwd="Welcome@123", db="db_pdv")
+		connection = MySQLdb.connect(host=DB_SERVER, user=DB_USER, passwd=DB_PASSWD, db=DB_NAME)
 	except:
 		print('Failed to establish connection with mysql database')
 		return False
@@ -272,7 +277,23 @@ def main():
 	parser.add_argument('--file', action = "store", dest = "file", type=str, required=True)
 	parser.add_argument('--title', action = "store", dest = "title", type=str, required=True)
 	parser.add_argument('--description', action = "store", dest = "description", type=str, required=False)
+	parser.add_argument('--db_server', action="store", dest="db_server", type=str, required=True)
+	parser.add_argument('--db_user', action="store", dest="db_user", type=str, required=False)
+	parser.add_argument('--db_passwd', action="store", dest="db_passwd", type=str, required=True)
+	parser.add_argument('--db_name', action="store", dest="db_name", type=str, required=False)
 	given_args = parser.parse_args()
+	
+	global DB_SERVER
+	global DB_USER
+	global DB_NAME
+	global DB_PASSWD	
+	DB_SERVER = given_args.db_server
+	if not given_args.db_user:
+		DB_USER = given_args.db_user
+	DB_PASSWD = given_args.db_passwd
+	if not given_args.db_name:
+		DB_NAME = given_args.db_name
+
 	description = given_args.description
 	if not given_args.description:
 		if not os.path.exists('./pdv_client'):
