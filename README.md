@@ -141,6 +141,11 @@ The source snippets would generate large number of key-value pairs with keys bei
 This client software fetches data from the database and plots them on the screen in 3D or 2D, based on the type of data.
 Additionally, it can also perform gradient descend to select the most suitable algorithm or data structure and input values!
 
+## Web Client ScreenShots
+![Screenshot from 2024-11-28 20-40-42](https://github.com/user-attachments/assets/5d826127-dab4-44f1-97dc-99e07f3db6b1)
+![image](https://github.com/user-attachments/assets/bb25a120-6df9-4c62-9056-d4906058d904)
+
+
 ### TODO
 - [x] Refactor the pdv_host.py to first fetch ip addreses of all the NICs on the host device and then search for pdv clients
 - [x] If --ipa_file has non-null value, then use this as a .json file to parse it and get the ip addresses of pdv clients from there only
