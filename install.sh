@@ -47,15 +47,15 @@ WorkingDirectory=${INSTALL_PATH}
 
 [Install]
 WantedBy=multi-user.target
-" 	> pdvwebclient.service
+" 	> $SERVICE_NAME.service
 	SERVICE_PATH="/etc/systemd/system/${SERVICE_NAME}.service"
 	if [ -f $SERVICE_PATH ]; then
 		echo "Error: Service /etc/systemd/system/pdvwebclient already exists, please either remove it or specify a different name using SERVICE_NAME variable"
 	else
-		cp pdvwebclient.service $SERVICE_PATH
-		systemctl start pdvwebclient
-		systemctl enable pdvwebclient
+		cp $SERVICE_NAME.service $SERVICE_PATH
+		systemctl start $SERVICE_NAME
+		systemctl enable $SERVICE_NAME.service
 		systemctl daemon-reload
-		systemctl restart pdvwebclient
+		systemctl restart $SERVICE_NAME
 	fi
 fi
