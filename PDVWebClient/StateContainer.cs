@@ -54,7 +54,7 @@ public class StateContainer
         {
             connection.Open();
             Console.WriteLine("Connected to MySQL!");
-            string query = "SELECT * FROM db_pdv.main_table";
+            string query = string.Format("SELECT * FROM {0}.main_table", Configuration["databaseName"] ?? "db_pdv");
             using(MySqlCommand command = new MySqlCommand(query, connection))
             {
                 using(MySqlDataReader reader = command.ExecuteReader())

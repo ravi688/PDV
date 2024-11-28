@@ -32,7 +32,7 @@ else
       {
             connection.Open();
             Console.WriteLine("Connected to MySQL (from CPUResult)!");
-            string query = $"SELECT * FROM db_pdv.result_table_{entryID} WHERE id={resultID}";
+            string query = String.Format("SELECT * FROM {0}.result_table_{1} WHERE id={2}", Configuration["databaseName"] ?? "db_pdv", entryID, resultID);
             using(MySqlCommand command = new MySqlCommand(query, connection))
             {
                 using(MySqlDataReader reader = command.ExecuteReader())
