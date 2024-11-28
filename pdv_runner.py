@@ -5,7 +5,7 @@ import json
 import subprocess
 import os
 
-PDV_CLIENT_PORT = 400
+PDV_RUNNER_PORT = 400
 
 counter = 0
 
@@ -36,9 +36,9 @@ def compile(package):
 	else:
 		print('Error: File extension is not recognized')
 		return False
-	if not os.path.exists('./.pdv_client/'):
-		os.mkdir('./.pdv_client')
-	disk_filepath = './.pdv_client/' + filename
+	if not os.path.exists('./.pdv_runner/'):
+		os.mkdir('./.pdv_runner')
+	disk_filepath = './.pdv_runner/' + filename
 	with open(disk_filepath, "w") as file:
 		file.write(package['content'])
 	args = []
@@ -65,7 +65,7 @@ def compile(package):
 
 def send_result(s, id):
 	try:
-		s.sendall("From PDV Client: Result Available".encode())
+		s.sendall("From PDV Runner: Result Available".encode())
 	except:
 		print('[%d] Failed to send result available notification' % id)
 		return
@@ -104,7 +104,7 @@ def process(connected_socket, id):
 	#	return
 	challenge = buf.decode("utf-8")
 	if challenge == "From PDV Host: Who are you?":
-		response = "I'm PDV Client".encode()
+		response = "I'm PDV Runner".encode()
 		try:
 			s.sendall(response)
 		except:
@@ -120,7 +120,7 @@ def process(connected_socket, id):
 			print('[%d] Connection verified' % id)
 		try:
 			print('[%d] Sending source package request' % id)
-			s.sendall("From PDV Client: Please send file".encode())
+			s.sendall("From PDV Runner: Please send file".encode())
 		except:
 			print('[%d] Failed to send source package request %s' % (id, e))
 			return
@@ -137,7 +137,7 @@ def process(connected_socket, id):
 			return
 		try:
 			print('[%d] Sending ACK')
-			s.sendall("From PDV Client: ACK".encode())
+			s.sendall("From PDV Runner: ACK".encode())
 		except:
 			print('[%d] Failed to send ACK' % id)
 			return
@@ -183,9 +183,9 @@ def bind_ip_address(s):
 			print('Trying to get INET addresses for interface: %s' % interface)
 			ip_addresses = try_get_ip_addresses(interface)
 			for ip_address in ip_addresses:
-				print('\tTrying binding listen socket at IP Address: %s, port: %d' % (ip_address, PDV_CLIENT_PORT), end = ' ')
+				print('\tTrying binding listen socket at IP Address: %s, port: %d' % (ip_address, PDV_RUNNER_PORT), end = ' ')
 				try:
-					s.bind((ip_address, PDV_CLIENT_PORT))
+					s.bind((ip_address, PDV_RUNNER_PORT))
 				except:
 					print(' - failed')
 					continue
@@ -193,7 +193,7 @@ def bind_ip_address(s):
 				return True
 	try:
 		print('\tTrying at 127.0.0.1', end = ' ')
-		s.bind(("127.0.0.1", PDV_CLIENT_PORT))
+		s.bind(("127.0.0.1", PDV_RUNNER_PORT))
 	except:
 		print(' - failed')
 		return False
@@ -207,8 +207,8 @@ def main():
 	parser.add_argument('--port', action = "store", dest = "pdv_port", type=int, required=False)
 	given_args = parser.parse_args()
 	if given_args.pdv_port:
-		global PDV_CLIENT_PORT
-		PDV_CLIENT_PORT = given_args.pdv_port
+		global PDV_RUNNER_PORT
+		PDV_RUNNER_PORT = given_args.pdv_port
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	except:
@@ -220,7 +220,7 @@ def main():
 		print('Failed to bind socket')
 		return
 	while True:
-		print('Listening on port %d ...' % PDV_CLIENT_PORT)
+		print('Listening on port %d ...' % PDV_RUNNER_PORT)
 		s.listen(1)
 		sk = s.accept()
 		id = get_id()

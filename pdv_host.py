@@ -10,7 +10,7 @@ import subprocess
 import MySQLdb
 from xml.dom.minidom import parseString
 
-PDV_CLIENT_PORT = 400
+PDV_RUNNER_PORT = 400
 # first element is the file name, second element packaged json data to be dispatched to pdv clients
 SOURCE_PACKAGE = [str(), bytes()]
 TITLE = str()
@@ -131,8 +131,8 @@ def register_result_db(xml_result):
 		return False
 	return True
 
-def check_for_pdv_client(ip_address):
-	print(', checking for pdv client at port %d' % PDV_CLIENT_PORT, end = ' ')
+def check_for_pdv_runner(ip_address):
+	print(', checking for pdv client at port %d' % PDV_RUNNER_PORT, end = ' ')
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	except:
@@ -141,7 +141,7 @@ def check_for_pdv_client(ip_address):
 	s.setblocking(1)
 	s.settimeout(10)
 	try:
-		s.connect((ip_address, PDV_CLIENT_PORT))
+		s.connect((ip_address, PDV_RUNNER_PORT))
 	except socket.error as e:
 		s.close()
 		print(' - connection error occurred: %s' % e, end = ' ')
@@ -154,13 +154,13 @@ def check_for_pdv_client(ip_address):
 		print(' - send error occurred', end = ' ')
 		return
 	try:
-		buf = recvall(s, len("I'm PDV Client"))
+		buf = recvall(s, len("I'm PDV Runner"))
 	except:
 		s.close()
 		print(' - recv error ocurred', end = ' ')
 		return
 	response = buf.decode("utf-8")
-	if response == "I'm PDV Client":
+	if response == "I'm PDV Runner":
 		try:
 			s.sendall("From PDV Host: ACK".encode())
 		except:
@@ -170,12 +170,12 @@ def check_for_pdv_client(ip_address):
 		print('- found pdv client')
 		try:
 			print('Listening for file request')
-			buf = recvall(s, len("From PDV Client: Please send file"))
+			buf = recvall(s, len("From PDV Runner: Please send file"))
 		except:
 			print('receive error')
 			s.close();
 			return
-		if not buf.decode("utf-8") == "From PDV Client: Please send file":
+		if not buf.decode("utf-8") == "From PDV Runner: Please send file":
 			print('Invalid request received')
 			s.close()
 			return
@@ -189,24 +189,24 @@ def check_for_pdv_client(ip_address):
 			return
 		try:
 			print('Waiting for PDV client ack')
-			buf = recvall(s, len("From PDV Client: ACK"))
+			buf = recvall(s, len("From PDV Runner: ACK"))
 		except:
 			print('failed to receive ack')
 			s.close()
 			return
-		if buf.decode("utf-8") == "From PDV Client: ACK":
+		if buf.decode("utf-8") == "From PDV Runner: ACK":
 			print('PDV client has received file')
 		else:
 			print('Invalid response received')
 		try:
 			print('Waiting for PDV client result notification')
-			buf = recvall(s, len("From PDV Client: Result Available"))
+			buf = recvall(s, len("From PDV Runner: Result Available"))
 		except:
 			print('Failed to get result notification')
 			s.close()
 			return
 		xml_result = None
-		if buf.decode("utf-8") == "From PDV Client: Result Available":
+		if buf.decode("utf-8") == "From PDV Runner: Result Available":
 			print('Receiving result')
 			buf = receive_file(s)
 			if buf:
@@ -233,11 +233,11 @@ def check_for_pdv_client(ip_address):
 	s.close()
 
 def ping(ip_address):
-	print('\tPinging %s at port %d ..' % (ip_address, PDV_CLIENT_PORT), end = ' ')
+	print('\tPinging %s at port %d ..' % (ip_address, PDV_RUNNER_PORT), end = ' ')
 	result = icmplib.ping(ip_address, count=1, interval=0.1)
 	if result.is_alive:
 		print(' - found alive', end = ' ')
-		check_for_pdv_client(ip_address)
+		check_for_pdv_runner(ip_address)
 	print('')
 
 def find_hosts_on_subnet(ip_address):
@@ -299,8 +299,8 @@ def main():
 	DESCRIPTION = description.replace('"', '\\"')
 	TITLE = given_args.title.replace('"', '\\"')
 	if given_args.pdv_port:
-		global PDV_CLIENT_PORT
-		PDV_CLIENT_PORT = given_args.pdv_port
+		global PDV_RUNNER_PORT
+		PDV_RUNNER_PORT = given_args.pdv_port
 	with open(given_args.file, "r") as file:
 		global SOURCE_PACKAGE
 		SOURCE_PACKAGE[0] = given_args.file
