@@ -62,8 +62,8 @@ def receive_file(s):
 def register_entry_db():
 	try:
 		connection = MySQLdb.connect(host=DB_SERVER, user=DB_USER, passwd=DB_PASSWD, db=DB_NAME)
-	except:
-		print('Failed to establish connection to mysql database')
+	except Exception as error:
+		print('Failed to establish connection to mysql database:', error)
 		return None
 	if not connection:
 		print('Connection is null')
@@ -288,10 +288,10 @@ def main():
 	global DB_NAME
 	global DB_PASSWD	
 	DB_SERVER = given_args.db_server
-	if not given_args.db_user:
+	if given_args.db_user:
 		DB_USER = given_args.db_user
 	DB_PASSWD = given_args.db_passwd
-	if not given_args.db_name:
+	if given_args.db_name:
 		DB_NAME = given_args.db_name
 
 	description = given_args.description
