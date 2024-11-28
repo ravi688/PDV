@@ -61,7 +61,7 @@ def receive_file(s):
 
 def register_entry_db():
 	try:
-	connection = MySQLdb.connect(host=DB_SERVER, user=DB_USER, passwd=DB_PASSWD, db=DB_NAME)
+		connection = MySQLdb.connect(host=DB_SERVER, user=DB_USER, passwd=DB_PASSWD, db=DB_NAME)
 	except:
 		print('Failed to establish connection to mysql database')
 		return None
@@ -72,7 +72,7 @@ def register_entry_db():
 	query = "INSERT INTO db_pdv.main_table (filename, title, description, source) VALUES (\"%s\",\"%s\",\"%s\",\"%s\");" % (SOURCE_PACKAGE[0], TITLE, DESCRIPTION, SOURCE)
 	print(query)
 	try:
-	cursor.execute(query)
+		cursor.execute(query)
 	except:
 		print('Failed to insert into db_pdv.main_table')
 		connection.close()
