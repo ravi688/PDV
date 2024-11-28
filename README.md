@@ -150,8 +150,8 @@ Additionally, it can also perform gradient descend to select the most suitable a
 - [x] Refactor the pdv_host.py to first fetch ip addreses of all the NICs on the host device and then search for pdv clients
 - [x] If --ipa_file has non-null value, then use this as a .json file to parse it and get the ip addresses of pdv clients from there only
 - [x] After ack, send the file supplied via --file argument to pdv clients, that should be as soon as a pdv client is found
-- [ ] Maintain a pdv clients status register in pdv_host, pdv_host would instantiate threads to listen for status updates for each pdv client
-- [ ] Once pdv host has sent the file to all the found pdv clients, it must wait on every pdv client to finish, if any pdv client reports errorneous status then display it but let others finish
+- [x] Maintain a pdv clients status register in pdv_host, pdv_host would instantiate threads to listen for status updates for each pdv client
+- [x] Once pdv host has sent the file to all the found pdv clients, it must wait on every pdv client to finish, if any pdv client reports errorneous status then display it but let others finish
 - [x] Create a standalone C (C++ compatible) header file to provide set of minimal and easy to use functions to generate an .xml file containing performance metrics data
 - [x] In pdv_client.py, it should invoke gcc (if file received has .c extension) or g++ (it has .cpp extension) to compile the source into an executable and run it to generate .xml file
 - [x] After .xml file is generated, it should be send back to pdv host as response
