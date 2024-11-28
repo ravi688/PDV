@@ -105,7 +105,7 @@ The following parameters need to be specified:
 git clone https://github.com/ravi688/PDV
 sudo python pdv_runner.py --port 400
 ```
-### Setting up PDV Host (Machine4)
+### Setting up PDV Host and making first commit (Machine4)
 You'll need to install dependency packages mentioned in the very first section, clone the repo and run `pdv_host.py` script in python.
 The following parameters need to be specified:
  - `--port`: Port number of pdv runners, it must match with ones specified while running pdv_runner.py
