@@ -78,8 +78,7 @@ The following parameters need to be specified while executing the script:
 - `DB_PASSWORD`: Password for DB_USERNAME
 - `DB_SERVER`: IP address of the mysql server (more in mysql database section)
 ```
-sudo apt-get install -y dotnet-sdk-9.0
-sudo apt-get install -y dotnet-runtime-9.0
+sudo apt install -y dotnet-sdk-8.0
 git clone https://github.com/ravi688/PDV
 cd PDV
 sudo URL="http://192.168.1.15:80" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB_PASSWORD="1234" DB_SERVER="192.168.1.18" ./install.sh
