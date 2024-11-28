@@ -24,13 +24,17 @@ fi
 
 INSTALL_PATH="${INSTALL_DIR}/pdvwebclient"
 
+BUILD_DIR="PDVWebClient.build.dir"
+
+dotnet publish -c Release --self-contained -r linux-x64 PDVWebClient/ -o $BUILD_DIR
+
 if [ -d $INSTALL_PATH ]; then
 	echo "Error: ${INSTALL_PATH} already exists, please either remove it or specify INSTALL_DIR different from /var"
 else
 	echo "Creating directory ${INSTALL_PATH}"
 	mkdir -p $INSTALL_PATH
 	echo "Copying all files to ${INSTALL_PATH}"
-	cp -r * $INSTALL_PATH
+	cp -r $BUILD_DIR/* $INSTALL_PATH
 	echo "
 [Unit]
 Description=PDV Web Client 1.0
