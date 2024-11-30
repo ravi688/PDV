@@ -93,6 +93,16 @@ You'll need to install mysql-server in Ubuntu or any other linux distro and exec
 
 **NOTE**: For mysql You must also configure the file at `/etc/mysql/mysql.conf.d/mysqld.cnf` to bind mysql's server socket to a different ip address (of the some NIC connected to the same host) other than 127.0.0.1 (default one). This way, the database can be accessed by other hosts on the same network. </br>
 For mariadb, you may have to configure the file at `/etc/mysql/mariadb.conf.d/50-server.cnf` for the same.
+After configuring the bind-address, make sure to restart the mariadb or mysql using the following commands:
+```
+sudo systemctl restart mysql
+OR
+sudo systemctl restart mariadb
+```
+Run the following to check the listening address of the database server (by default the port is 3306, in case you haven't changed):
+```
+sudo netstat -tunpl | grep 3306
+```
 
 The following parameters need to be specified while executing the script:
 - `WC_IPA`: IP address of the web client server you just setup in the previou section
