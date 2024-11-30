@@ -6,6 +6,9 @@ import subprocess
 import os
 
 PDV_RUNNER_PORT = 400
+CPP_COMPILER='g++'
+C_COMPILER='gcc'
+INCLUDE_DIR='.'
 
 counter = 0
 
@@ -28,10 +31,10 @@ def compile(package):
 	flags = ['-m64', '-Wall']
 	if extension == 'c':
 		print('This is C file')
-		compiler = 'gcc'
+		compiler = C_COMPILER
 	elif extension == 'cpp' or extension == 'cxx':
 		print('This is C++ file')
-		compiler = 'g++'
+		compiler = CPP_COMPILER
 		flags.append('-std=c++20')
 	else:
 		print('Error: File extension is not recognized')
@@ -44,21 +47,21 @@ def compile(package):
 	args = []
 	args.append(compiler)
 	args.extend(flags)
-	args.append('-I./')
+	args.append('-I%s/' % INCLUDE_DIR)
 	args.append(disk_filepath)
 	args.append('-o')
 	exec_path = disk_filepath + ".exc"
 	args.append(exec_path)
 	try:
 		result = subprocess.run(args)
-	except:
-		print('Error: Failed to compile')
+	except Exception as error:
+		print('Error: Failed to compile ', error)
 		return False;
 	print(result)
 	try:
 		result = subprocess.run(exec_path)
-	except:
-		print('Error: Failed to execute')
+	except Exception as error:
+		print('Error: Failed to execute ', error)
 		return False
 	print(result)
 	return True
@@ -205,7 +208,19 @@ def main():
 	print('PDV Client version 1.0')
 	parser = argparse.ArgumentParser(description = 'PDV Client version 1.0')
 	parser.add_argument('--port', action = "store", dest = "pdv_port", type=int, required=False)
+	parser.add_argument('--cpp_compiler', action="store", dest="cpp_compiler", type=str, required=False)
+	parser.add_argument('--c_compiler', action="store", dest="c_compiler", type=str, required=False)
+	parser.add_argument('--include_dir', action="store", dest="include_dir", type=str, required=False)
 	given_args = parser.parse_args()
+	if given_args.cpp_compiler:
+		global CPP_COMPILER
+		CPP_COMPILER = given_args.cpp_compiler
+	if given_args.c_compiler:
+		global C_COMPILER
+		C_COMPILER = given_args.c_compiler
+	if given_args.include_dir:
+		global INCLUDE_DIR
+		INCLUDE_DIR = given_args.include_dir
 	if given_args.pdv_port:
 		global PDV_RUNNER_PORT
 		PDV_RUNNER_PORT = given_args.pdv_port
