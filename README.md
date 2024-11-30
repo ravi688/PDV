@@ -4,7 +4,7 @@ A tool to automate running C++ snippets of algorithms and data structures on dif
 Why can't we use Github/Gitlab Runners and CI/CD? It's because it is a bit complex to achieve "Process just commited (pushed) file only or at least I don't know how to achieve this using Gitlab Runners. Also, working on this kind of project is a good exercise for me to get familiar with fundamentals of Mysql, and Blazor.
 
 ## Dependency/Package Requirements
-❗️**Important**: This project requires you to install mysql-client (on pdv host) and mysql-server (on database server); if you have mariadb-server installed already then it will be uninstalled automatically by mysql-server.
+❗️**Important**: This project requires you to install mysql-client (on pdv host) and mysql-server (on database server); if you have mariadb already installed then no need to install mysql as the `db_setup.sh` script will automatically pick that up.
 
 ### For PDV Runners
 #### On Linux (Ubuntu)
@@ -91,7 +91,8 @@ sudo URL="http://192.168.1.15:80" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB
 ### Setting up Mysql Database server (Machine2)
 You'll need to install mysql-server in Ubuntu or any other linux distro and execute `./db_setup.sh` bash script in sudo mode. This script creates a database 'db_pdv', a table 'db_pdv.main_table' and creates users.
 
-NOTE: You may also configure the file at `/etc/mysql/mysql.conf.d/mysqld.cnf` to bind mysql's server socket to a different ip address (must of some NIC on the same computer) other than 127.0.0.1 (default one).
+**NOTE**: For mysql You must also configure the file at `/etc/mysql/mysql.conf.d/mysqld.cnf` to bind mysql's server socket to a different ip address (of the some NIC connected to the same host) other than 127.0.0.1 (default one). This way, the database can be accessed by other hosts on the same network. </br>
+For mariadb, you may have to configure the file at `/etc/mysql/mariadb.conf.d/50-server.cnf` for the same.
 
 The following parameters need to be specified while executing the script:
 - `WC_IPA`: IP address of the web client server you just setup in the previou section
