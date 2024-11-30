@@ -92,7 +92,7 @@ sudo URL="http://192.168.1.15:80" DB_NAME="db_pdv" DB_USERNAME="pdvwebclient" DB
 You'll need to install mysql-server in Ubuntu or any other linux distro and execute `./db_setup.sh` bash script in sudo mode. This script creates a database 'db_pdv', a table 'db_pdv.main_table' and creates users.
 
 **NOTE**: For mysql You must also configure the file at `/etc/mysql/mysql.conf.d/mysqld.cnf` to bind mysql's server socket to a different ip address (of the some NIC connected to the same host) other than 127.0.0.1 (default one). This way, the database can be accessed by other hosts on the same network. </br>
-For mariadb, you may have to configure the file at `/etc/mysql/mariadb.conf.d/50-server.cnf` for the same.
+For mariadb, you may have to configure the file at `/etc/mysql/mariadb.conf.d/50-server.cnf` for the same. </br>
 After configuring the bind-address, make sure to restart the mariadb or mysql using the following commands:
 ```
 sudo systemctl restart mysql
