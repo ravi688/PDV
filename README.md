@@ -4,6 +4,8 @@ A tool to automate running C++ snippets of algorithms and data structures on dif
 Why can't we use Github/Gitlab Runners and CI/CD? It's because it is a bit complex to achieve "Process just commited (pushed) file only or at least I don't know how to achieve this using Gitlab Runners. Also, working on this kind of project is a good exercise for me to get familiar with fundamentals of Mysql, and Blazor.
 
 ## Dependency/Package Requirements
+❗️**Important**: This project requires you to install mysql-client (on pdv host) and mysql-server (on database server); if you have mariadb-server installed already then it will be uninstalled automatically by mysql-server.
+
 ### For PDV Runners
 #### On Linux (Ubuntu)
 ```
