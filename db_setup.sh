@@ -21,6 +21,19 @@ if [ -z $PDV_HOST_PSWD ]; then
 	return
 fi
 
+if [ -z $DB_CMD ]; then
+	echo "DB_CMD is not set, trying to find database servers on this machine"
+	if command -v mysql 2>&1 > /dev/null; then
+		DB_CMD="mysql"
+	elif command -v mariadb 2>&1 > /dev/null; then
+		DB_CMD="mariadb"
+	else
+		echo "Failed to find any database server commands"
+		exit 1
+	fi
+	echo "Found ${DB_CMD}, DB_CMD now set to ${DB_CMD}"
+fi
+
 # create database and tables
 echo "CREATE DATABASE IF NOT EXISTS ${DB_NAME};" | mysql
 echo "USE ${DB_NAME};" | mysql
